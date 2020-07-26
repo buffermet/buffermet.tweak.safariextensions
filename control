@@ -1,0 +1,9 @@
+Package: buffermet.tweak.safariextensions
+Name: Safari Extensions
+Depends: mobilesubstrate
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: An awesome MobileSubstrate tweak!
+Maintainer: Yarwin Kolff (buffermet)
+Author: Yarwin Kolff (buffermet)
+Section: Tweaks
