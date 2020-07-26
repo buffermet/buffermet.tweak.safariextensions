@@ -49,8 +49,8 @@ NSString * assemblePayloadForHost(NSString * const host) {
         evaluateJavaScript:payload
         completionHandler:nil];
     }
-    %orig;
   }
+  %orig;
 }
 
 /*
