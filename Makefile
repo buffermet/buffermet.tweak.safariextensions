@@ -4,7 +4,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = SafariExtensions
 
-SafariExtensions_FILES = Tweak.x
+SafariExtensions_FILES = Tweak.x URLTools.m
 SafariExtensions_CFLAGS = -fobjc-arc
 
 include $(THEOS_MAKE_PATH)/tweak.mk
