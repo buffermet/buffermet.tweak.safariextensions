@@ -39,7 +39,6 @@ NSString * assemblePayloadForHost(NSString * const host) {
 
 %hook WKWebView
 
-// called when document parsing starts
 -(void)_didCommitLoadForMainFrame {
   NSString * const host = [[self URL] host];
   if (host) {
@@ -53,42 +52,5 @@ NSString * assemblePayloadForHost(NSString * const host) {
   %orig;
 }
 
-/*
-// obviously called when page finished loading (i.e. self.onload)
--(void)_didFinishLoadForMainFrame {
-  NSLog(@"abla %@", @"-(void)_didFinishLoadForMainFrame {");
-  %orig;
-}
-
-// called when new search/URL is requested
--(id)loadRequest:(id)arg1 {
-  NSLog(@"abla %@", @"-(id)loadRequest:(id)arg1 {");
-  return %orig;
-}
-
-// called when page starts reloading
--(id)reload {
-  NSLog(@"abla %@", @"-(id)reload {");
-  return %orig;
-}
-
-// ?
--(id)initWithFrame:(CGRect)arg1 {
-  NSLog(@"abla %@", @"-(id)initWithFrame:(CGRect)arg1 {");
-  return %orig;
-}
-
-// called on page load cycles
--(id)initWithFrame:(CGRect)arg1 configuration:(id)arg2 {
-  NSLog(@"abla %@", @"-(id)initWithFrame:(CGRect)arg1 configuration:(id)arg2 {");
-  return %orig;
-}
-
-// called at pretty much every event
--(void)setFrame:(CGRect)arg1 {
-  NSLog(@"abla %@", @"-(void)setFrame:(CGRect)arg1 {");
-  %orig;
-}
-*/
-
 %end
+
