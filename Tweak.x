@@ -3,12 +3,6 @@
 -(void)evaluateJavaScript:(id)arg1 completionHandler:(id)arg2 ;
 @end
 
-@interface WKNavigation : NSObject
-@end
-
-@interface WKNavigationAction : NSObject
-@end
-
 /*
 NSURL * upgradeScheme(NSURL * URL) {
   NSString * const insecureURL = [NSString
@@ -66,8 +60,9 @@ NSString * assembleScriptForHost(NSString * host) {
   /* debug */
 
   const NSDictionary * const safariExtensions = @{
+    // debug result: JS is executed before readyState is set to "loading" (i.e. inline script tag at top of document)
+    @"*.google.com.au": @"document.onreadystatechange=function(){alert(document.readyState)};self.stop()",
     @"*": @"const darkModeCSS = `html, body, html div, html section, html span, html table { background-color: #000 !important; color: #fff !important; } a { color: rgb(0,142,255) !important; }`; const stylesheet = document.createElement(\"style\"); stylesheet.type = \"text/css\"; stylesheet.innerText = darkModeCSS; document.body.append(stylesheet);",
-    @"*.google.com.au": @"alert('special payload for *.google.com.au !');",
   };
   for (NSString * domainSpecifier in [safariExtensions allKeys]) {
     if ([domainSpecifier isEqual:@"*"]) {
@@ -96,19 +91,14 @@ NSString * assembleScriptForHost(NSString * host) {
 %hook WKWebView
 
 -(void)_didCommitLoadForMainFrame {
-/*
-  NSLog(@"abla %@", @"-(void)_didCommitLoadForMainFrame {");
-  NSLog(@"abla URL %@", [self URL]);
-  NSLog(@"abla host %@", [[self URL] host]);
-  NSLog(@"abla self %@", self);
-*/
-  NSLog(@"abla %@", assembleScriptForHost([[self URL] host]));
-  [self evaluateJavaScript:assembleScriptForHost([[self URL] host]) completionHandler:nil];
+  [self
+    evaluateJavaScript:assembleScriptForHost([[self URL] host])
+    completionHandler:nil];
   %orig;
 }
 
 /*
-// ur durr idk ...
+// obviously called when page finished loading (i.e. self.onload)
 -(void)_didFinishLoadForMainFrame {
   NSLog(@"abla %@", @"-(void)_didFinishLoadForMainFrame {");
   %orig;
