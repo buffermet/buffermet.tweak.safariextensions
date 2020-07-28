@@ -2,11 +2,12 @@
 
 @implementation SEPRootListController
 
-- (NSArray *)specifiers {
+-(NSArray *)specifiers {
 	if (!_specifiers) {
-		_specifiers = [self loadSpecifiersFromPlistName:@"Root" target:self];
+		_specifiers = [self
+      loadSpecifiersFromPlistName:@"Root"
+      target:self];
 	}
-
 	return _specifiers;
 }
 
@@ -19,7 +20,7 @@
 -(void)openSourceGitHub {
   [[UIApplication sharedApplication]
     openURL:[NSURL
-      URLWithString:@"https://github.com/buffermet/buffermet.tweak.secureclipboard"]];
+      URLWithString:@"https://github.com/buffermet/buffermet.tweak.safariextensions"]];
 }
 
 -(void)openDonateCoinbase {

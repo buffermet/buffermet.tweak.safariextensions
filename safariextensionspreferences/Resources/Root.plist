@@ -4,72 +4,72 @@
 <dict>
 	<key>items</key>
 	<array>
-      <dict>
-        <key>cell</key>
-        <string>PSGroupCell</string>
-        <key>label</key>
-        <string>MANAGE TWEAK</string>
-      </dict>
-      <dict>
-        <key>cell</key>
-        <string>PSLinkCell</string>
-        <key>defaults</key>
-        <string>buffermet.tweak.safariextensionspreferences</string>
-        <key>label</key>
-        <string>...</string>
-      </dict>
-      <dict>
-        <key>cell</key>
-        <string>PSGroupCell</string>
-        <key>label</key>
-        <string>DEVELOPER</string>
-      </dict>
-      <dict>
-        <key>cell</key>
-        <string>PSButtonCell</string>
-        <key>action</key>
-        <string>openTwitterBuffermet</string>
-        <key>label</key>
-        <string>Yarwin Kolff (buffermet)</string>
-        <key>icon</key>
-        <string>dev_assets/twitter.png</string>
-      </dict>
-      <dict>
-        <key>cell</key>
-        <string>PSButtonCell</string>
-        <key>action</key>
-        <string>openSourceGitHub</string>
-        <key>label</key>
-        <string>Source Code</string>
-        <key>icon</key>
-        <string>dev_assets/github.png</string>
-      </dict>
-      <dict>
-        <key>cell</key>
-        <string>PSGroupCell</string>
-        <key>label</key>
-        <string>Thank You</string>
-      </dict>
-      <dict>
-        <key>cell</key>
-        <string>PSButtonCell</string>
-        <key>action</key>
-        <string>openDonateCoinbase</string>
-        <key>label</key>
-        <string>Donate With Coinbase</string>
-        <key>icon</key>
-        <string>donate_assets/coinbase.png</string>
-      </dict>
-      <dict>
-        <key>cell</key>
-        <string>PSButtonCell</string>
-        <key>action</key>
-        <string>openDonatePayPal</string>
-        <key>label</key>
-        <string>Donate With PayPal</string>
-        <key>icon</key>
-        <string>donate_assets/paypal.png</string>
-      </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>MANAGE BROWSER EXTENSIONS</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSLinkCell</string>
+      <key>detail</key>
+      <string>SEPExtensionsListController</string>
+      <key>label</key>
+      <string>My Extensions</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>DEVELOPER</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSButtonCell</string>
+      <key>action</key>
+      <string>openTwitterBuffermet</string>
+      <key>label</key>
+      <string>Yarwin Kolff (buffermet)</string>
+      <key>icon</key>
+      <string>dev_assets/twitter.png</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSButtonCell</string>
+      <key>action</key>
+      <string>openSourceGitHub</string>
+      <key>label</key>
+      <string>Source Code</string>
+      <key>icon</key>
+      <string>dev_assets/github.png</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>Thank You</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSButtonCell</string>
+      <key>action</key>
+      <string>openDonateCoinbase</string>
+      <key>label</key>
+      <string>Donate With Coinbase</string>
+      <key>icon</key>
+      <string>donate_assets/coinbase.png</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSButtonCell</string>
+      <key>action</key>
+      <string>openDonatePayPal</string>
+      <key>label</key>
+      <string>Donate With PayPal</string>
+      <key>icon</key>
+      <string>donate_assets/paypal.png</string>
+    </dict>
 	</array>
 	<key>title</key>
 	<string>Safari Extensions</string>

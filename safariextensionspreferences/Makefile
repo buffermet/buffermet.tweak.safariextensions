@@ -2,7 +2,7 @@ include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = SafariExtensionsPreferences
 
-SafariExtensionsPreferences_FILES = SEPRootListController.m
+SafariExtensionsPreferences_FILES = SEPRootListController.m SEPExtensionsListController.m
 SafariExtensionsPreferences_INSTALL_PATH = /Library/PreferenceBundles
 SafariExtensionsPreferences_FRAMEWORKS = UIKit
 SafariExtensionsPreferences_PRIVATE_FRAMEWORKS = Preferences

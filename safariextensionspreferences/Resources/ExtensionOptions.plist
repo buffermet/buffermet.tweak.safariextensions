@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>TARGET DOMAINS</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>ACCEPTED FORMATS:
+
+*
+*.EXAMPLE.COM
+WWW.EXAMPLE.COM
+WWW.EXAMPLE.COM/PATH</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>INTERCEPT HTTP TRAFFIC</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSLinkCell</string>
+      <key>label</key>
+      <string>WebRequest</string>
+    </dict>
+	</array>
+	<key>title</key>
+	<string>Nameless Extension</string>
+</dict>
+</plist>

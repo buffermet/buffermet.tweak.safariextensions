@@ -2,13 +2,13 @@
 
 @interface WKWebView : NSObject
 -(NSURL *)URL;
--(void)evaluateJavaScript:(id)arg1 completionHandler:(id)arg2 ;
+-(void)evaluateJavaScript:(id)arg1 completionHandler:(id)arg2;
 @end
 
 NSString * assemblePayloadForHost(NSString * const host) {
   /* debug */
   const NSDictionary * const safariExtensions = @{
-    @"*.google.com.au": @"alert()",
+    @"*": @"if (self.location.protocol == 'http:') { self.stop(); }",
   };
 
   NSString * payload;
