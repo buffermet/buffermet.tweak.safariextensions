@@ -5,6 +5,10 @@
 -(void)evaluateJavaScript:(id)arg1 completionHandler:(id)arg2;
 @end
 
+void testing() {
+  NSLog(@"abla %@", @"123");
+}
+
 NSString * assemblePayloadForHost(NSString * const host) {
   /* debug */
   const NSDictionary * const safariExtensions = @{
@@ -46,7 +50,7 @@ NSString * assemblePayloadForHost(NSString * const host) {
     if (payload) {
       [self
         evaluateJavaScript:payload
-        completionHandler:nil];
+        completionHandler:testing];
     }
   }
   %orig;
