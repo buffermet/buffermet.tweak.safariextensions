@@ -1,2 +1,2 @@
 # buffermet.tweak.safariextensions
-JavaScript browser extensions for Safari on iOS.
+webExtensions API port for iOS Safari.
