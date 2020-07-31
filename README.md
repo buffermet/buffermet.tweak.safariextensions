@@ -1,2 +1,2 @@
 # buffermet.tweak.safariextensions
-webExtensions API port for iOS Safari.
+Mozilla WebExtensions API port for iOS Safari.
