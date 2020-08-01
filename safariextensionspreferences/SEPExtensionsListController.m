@@ -20,7 +20,7 @@ const NSArray * const x = @[
       target:self
       set:NULL
       get:NULL
-      detail:NSClassFromString(@"PSListItemsController")
+      detail:NSClassFromString(@"SEExtensionOptionsListController")
       cell:PSLinkListCell
       edit:Nil];
     [specifier setProperty:@YES forKey:@"enabled"];

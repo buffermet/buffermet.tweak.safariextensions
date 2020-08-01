@@ -12,8 +12,10 @@
     return buffer;
   };
 
-  const browser = new Object();
-  browser = {
+  const details = new Object();
+  // insert HTTP request (as details)
+
+  const browser = {
     "webRequest": {
       "onAuthRequired": {
         "addListener": (listener, filter, extraInfoSpec) => {

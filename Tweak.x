@@ -1,59 +1,17 @@
-#import "URLTools.h"
-
-@interface WKWebView : NSObject
--(NSURL *)URL;
--(void)evaluateJavaScript:(id)arg1 completionHandler:(id)arg2;
+@interface _SFInjectedJavaScriptController : NSObject {
+	WKWebView* _webView;
+	id<SFInjectedJavaScriptWebProcessController> _activityProxy;
+}
+-(id)initWithWebView:(id)arg1 ;
+-(void)runJavaScriptForActivity:(id)arg1 withScript:(id)arg2 object:(id)arg3 invokeMethod:(id)arg4 completionHandler:(/*^block*/id)arg5 ;
+-(id)_webProcessActivityProxy;
 @end
 
-void testing() {
-  NSLog(@"abla %@", @"123");
-}
+%hook _SFInjectedJavaScriptController
 
-NSString * assemblePayloadForHost(NSString * const host) {
-  /* debug */
-  const NSDictionary * const safariExtensions = @{
-    @"*": @"if (self.location.protocol == 'http:') { self.stop(); }",
-  };
-
-  NSString * payload;
-  for (NSString * domainSpecifier in [safariExtensions allKeys]) {
-    if ([domainSpecifier isEqual:@"*"]) {
-      payload = [NSString
-        stringWithFormat:
-          @"%@%@%@",
-          payload, @"\n", safariExtensions[domainSpecifier]];
-    } else {
-      NSRegularExpression * regexp = [%c(URLTools)
-        domainSpecifierToRegexpIgnoreCase:domainSpecifier];
-      NSString * matchString = [regexp
-        stringByReplacingMatchesInString:host
-        options:0
-        range:NSMakeRange(0, [host length])
-        withTemplate:@"1"]; /* lazy */
-      if ([matchString isEqual:@"1"]) {
-        payload = [NSString
-          stringWithFormat:
-            @"%@%@%@",
-            payload, @"\n", safariExtensions[domainSpecifier]];
-      }
-    }
-  }
-  return payload;
-}
-
-%hook WKWebView
-
--(void)_didCommitLoadForMainFrame {
-  NSString * const host = [[self URL] host];
-  if (host) {
-    const NSString * const payload = assemblePayloadForHost(host);
-    if (payload) {
-      [self
-        evaluateJavaScript:payload
-        completionHandler:testing];
-    }
-  }
-  %orig;
+-(void)runJavaScriptForActivity:(id)arg1 withScript:(id)arg2 object:(id)arg3 invokeMethod:(id)arg4 completionHandler:(/*^block*/id)arg5 {
+  NSLog(@"abla %@ %@ %@ %@ %@", arg1, arg2, arg3, arg4, arg5);
+  %orig(arg1, arg2, arg3, arg4, arg5);
 }
 
 %end

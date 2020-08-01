@@ -33,6 +33,12 @@ WWW.EXAMPLE.COM/PATH</string>
       <key>label</key>
       <string>WebRequest</string>
     </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>CONSOLE</string>
+    </dict>
 	</array>
 	<key>title</key>
 	<string>Nameless Extension</string>

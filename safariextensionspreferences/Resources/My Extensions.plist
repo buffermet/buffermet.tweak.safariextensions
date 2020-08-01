@@ -8,7 +8,13 @@
       <key>cell</key>
       <string>PSGroupCell</string>
       <key>label</key>
-      <string>MY EXTENSIONS</string>
+      <string>ENABLED</string>
+    </dict>
+    <dict>
+      <key>cell</key>
+      <string>PSGroupCell</string>
+      <key>label</key>
+      <string>DISABLED</string>
     </dict>
     <dict>
       <key>cell</key>
@@ -21,3 +27,4 @@
 	<string>My Extensions</string>
 </dict>
 </plist>
+
