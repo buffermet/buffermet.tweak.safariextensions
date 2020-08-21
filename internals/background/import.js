@@ -4,12 +4,12 @@
   const alphanumericCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
   const randomString = length => {
-    let buffer = new String();
+    let buffer = new Array(length);
     for (let i = 0; i < length; i++) {
       const charIndex = Math.floor(Math.rand() * alphanumericCharacters.length);
-      buffer.concat(alphanumericCharacters[charIndex]);
+      buffer[i] = alphanumericCharacters[charIndex];
     }
-    return buffer;
+    return buffer.join("");
   };
 
   const details = new Object();

@@ -3,7 +3,7 @@
 @implementation URLTools
 
 +(NSRegularExpression *)domainSpecifierToRegexpIgnoreCase:(NSString *)domainSpecifier {
-  NSRegularExpression *  regexp = [NSRegularExpression
+  NSRegularExpression * regexp = [NSRegularExpression
     regularExpressionWithPattern:@"[-]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];

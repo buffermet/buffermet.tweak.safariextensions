@@ -39,10 +39,13 @@
 }
 */
 
+#import "SEManifest.h"
+
 @implementation SEManifest
 
-//+(NSDictionary *)parseManifest:(NSString *)rawJSON {
+//+(NSDictionary *)parseManifest:(id)json {
   
 //}
 
 @end
+
