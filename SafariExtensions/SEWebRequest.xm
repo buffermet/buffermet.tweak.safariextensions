@@ -425,23 +425,27 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
     // new Array().concat({bytes: new ArrayBuffer(payload)});
     // {raw: ArrayBuffer(...)}
     // Uint8Array.from([0,0,0]).buffer
-    JSValue * detailsRequestBodyRawArray = [%c(JSValue)
-      valueWithNewObjectInContext:jsContext];
+    detailsRequestBodyRaw = [%c(JSValue)
+      valueWithNewArrayInContext:jsContext];
     NSArray * bufferedChunks = getBufferedStreamChunks(
       [request HTTPBodyStream],
       [[request HTTPBody] length]);
     for (NSString * thisChunk in bufferedChunks) {
+      JSValue * const detailsRequestBodyRawArrayItem = [%c(JSValue)
+        valueWithNewObjectInContext:jsContext];
       JSValue * const detailsRequestBodyRawUint8Array = [jsContext[@"Uint8Array"]
         invokeMethod:@"from"
         withArguments:Uint8ArrayFromData([thisChunk
           dataUsingEncoding:NSUTF8StringEncoding])];
-      JSValue * const detailsRequestBodyArrayBuffer = [detailsRequestBodyRawUint8Array
+      JSValue * const detailsRequestBodyRawArrayBuffer = [detailsRequestBodyRawUint8Array
         valueForProperty:@"buffer"];
-      [detailsRequestBodyRawArray
+      [detailsRequestBodyRawArrayItem
+        setValue:detailsRequestBodyRawArrayBuffer
+        forProperty:@"bytes"];
+      [detailsRequestBodyRaw
         invokeMethod:@"push"
-        withArguments:@[detailsRequestBodyArrayBuffer]];
+        withArguments:@[detailsRequestBodyRawArrayItem]];
     }
-    detailsRequestBodyRaw = detailsRequestBodyRawArray;
   }
   if (detailsRequestBodyError) {
     detailsRequestBody = [%c(JSValue)
