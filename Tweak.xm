@@ -3,45 +3,9 @@
 #import "SafariExtensions/SEContentScripts.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
-/*
-// https://stackoverflow.com/questions/4859760/obj-c-how-to-convert-nsdata-to-an-array-of-ints
-NSArray *arrayFromData(NSData *data) {
-    void *bytes = [data bytes];
-    NSMutableArray *ary = [NSMutableArray array];
-    for (NSUInteger i = 0; i < [data length]; i += sizeof(int32_t)) {
-        int32_t elem = OSReadLittleInt32(bytes, i);
-        [ary addObject:[NSNumber numberWithInt:elem]];
-    }
-    return ary;
-}
-*/
-
-/*
-static inline char itoh(int i) {
-    if (i > 9) return 'A' + (i - 10);
-    return '0' + i;
-}
-
-NSString * NSDataToHex(NSData *data) {
-  NSUInteger i, len;
-  unsigned char *buf, *bytes;
-
-  len = data.length;
-  bytes = (unsigned char*)data.bytes;
-  buf = malloc(len*2);
-
-  for (i=0; i<len; i++) {
-    buf[i*2] = itoh((bytes[i] >> 4) & 0xF);
-    buf[i*2+1] = itoh(bytes[i] & 0xF);
-  }
-
-  return [[NSString alloc]
-    initWithBytesNoCopy:buf
-    length:len*2
-    encoding:NSASCIIStringEncoding
-    freeWhenDone:YES];
-}
-*/
+@interface NSURLRequestInternal : NSObject
+-(unsigned long long)hash;
+@end
 
 NSDictionary * const extensions = @{
   @"0": @{
@@ -173,12 +137,8 @@ NSDictionary * const extensions = @{
 }
 
 // faults
--(id)dataTaskWithRequest:(id)arg1 {
-  NSLog(@"abla --- %@", @"dataTaskWithRequest");
-  id i = [arg1 valueForKey:@"requestID"];
-  if (i) {
-    NSLog(@"abla --- requestID %@ ", i);
-  }
+-(id)dataTaskWithRequest:(NSURLRequest *)arg1 {
+  NSLog(@"abla --- %lld ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
 //NSLog(@"abla --- %@%@", @"-(id)dataTaskWithRequest:", arg1);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
