@@ -48,7 +48,7 @@ JavaScript APIs:
 - [ ] userScripts
 - [ ] webNavigation
 - [ ] webRequest
-  - [] webRequestBlocking
+  - [ ] webRequestBlocking
     - [ ] Intercept finalized requests and responses.
       - [ ] NSURLSession
       - [ ] NSURLSessionConfiguration
