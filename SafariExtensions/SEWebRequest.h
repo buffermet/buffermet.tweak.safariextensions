@@ -1,7 +1,9 @@
 @interface SEWebRequest : NSObject
--(NSURLRequest *)detailsObjectToNSURLRequest:(id)details;
--(id)NSURLRequestToDetailsObject:(NSURLRequest *)request;
+-(NSMutableURLRequest *)detailsObjectToNSMutableURLRequest:(NSDictionary *)details;
+-(NSMutableDictionary *)NSURLRequestToDetailsObject:(NSURLRequest *)request;
 -(void)addListener:(id)listenerObj;
--(id)newListenerDetailsObject;
+-(NSMutableDictionary *)newListenerDetailsObject;
+//-(id)handleOnBeforeRequest:(NSURLRequest *)request;
+-(NSURLRequest *)handleOnBeforeSendHeaders:(NSURLRequest *)request;
 @end
 

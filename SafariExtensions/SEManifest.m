@@ -1,7 +1,5 @@
 /*
-
-// 100% compatibility kgo
-
+// example of a manifest.json
 {
   "applications": {
     "gecko": {

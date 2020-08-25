@@ -33,32 +33,37 @@ const browser = {
         if (listener.name == "") {
           listener.name = randomString(128);
         } else {
-          browser.webRequest.onAuthRequired.listeners.push()
+          this.listeners.push()
         }
-        for (let i = 0; i < browser.webRequest.onAuthRequired.listeners.length; i++) {
-          if (listener.name == browser.webRequest.onAuthRequired.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (listener.name == this.listeners[i][0].name) {
             return;
           }
         }
-        browser.webRequest.onAuthRequired.listeners.push([
+        this.listeners.push([
           listener,
           filter,
           extraInfoSpec]);
       },
       "hasListener": name => {
-        for (let i = 0; i < browser.webRequest.onAuthRequired.listeners.length; i++) {
-          if (name == browser.webRequest.onAuthRequired.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (name == this.listeners[i][0].name) {
             return true;
           }
         }
         return false;
       },
+      "hasListeners": () => {
+//        if (!this.eventOptions_.supportsListeners)
+//          throw new Error('This event does not support listeners.');
+        return this.listeners.length > 0;
+      },
       "listeners": [],
       "removeListener": name => {
-        const listeners = browser.webRequest.onAuthRequired.listeners;
+        const listeners = this.listeners;
         for (let i = 0; i < listeners.length; i++) {
           if (name === listeners[i][0].name) {
-            browser.webRequest.onAuthRequired.listeners = listeners.slice(0,i).concat(listeners.splice(i+1));
+            this.listeners.splice(i+1));
             return;
           }
         }
@@ -70,30 +75,35 @@ const browser = {
         if (listener.name == "") {
           listener.name = randomString(128);
         }
-        for (let i = 0; i < browser.webRequest.onBeforeRequest.listeners.length; i++) {
-          if (listener.name == browser.webRequest.onBeforeRequest.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (listener.name == this.listeners[i][0].name) {
             return;
           }
         }
-        browser.webRequest.onBeforeRequest.listeners.push([
+        this.listeners.push([
           listener,
           filter,
           extraInfoSpec]);
       },
       "hasListener": name => {
-        for (let i = 0; i < browser.webRequest.onBeforeRequest.listeners.length; i++) {
-          if (name == browser.webRequest.onBeforeRequest.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (name == this.listeners[i][0].name) {
             return true;
           }
         }
         return false;
       },
+      "hasListeners": () => {
+//        if (!this.eventOptions_.supportsListeners)
+//          throw new Error('This event does not support listeners.');
+        return this.listeners.length > 0;
+      },
       "listeners": [],
       "removeListener": name => {
-        const listeners = browser.webRequest.onBeforeRequest.listeners;
+        const listeners = this.listeners;
         for (let i = 0; i < listeners.length; i++) {
           if (name === listeners[i][0].name) {
-            browser.webRequest.onBeforeRequest.listeners = listeners.slice(0,i).concat(listeners.splice(i+1));
+            this.listeners.splice(i+1));
             return;
           }
         }
@@ -105,30 +115,35 @@ const browser = {
         if (listener.name == "") {
           listener.name = randomString(128);
         }
-        for (let i = 0; i < browser.webRequest.onBeforeSendHeaders.listeners.length; i++) {
-          if (listener.name == browser.webRequest.onBeforeSendHeaders.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (listener.name == this.listeners[i][0].name) {
             return;
           }
         }
-        browser.webRequest.onBeforeSendHeaders.listeners.push([
+        this.listeners.push([
           listener,
           filter,
           extraInfoSpec]);
       },
       "hasListener": name => {
-        for (let i = 0; i < browser.webRequest.onBeforeSendHeaders.listeners.length; i++) {
-          if (name == browser.webRequest.onBeforeSendHeaders.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (name == this.listeners[i][0].name) {
             return true;
           }
         }
         return false;
       },
+      "hasListeners": () => {
+//        if (!this.eventOptions_.supportsListeners)
+//          throw new Error('This event does not support listeners.');
+        return this.listeners.length > 0;
+      },
       "listeners": [],
       "removeListener": name => {
-        const listeners = browser.webRequest.onBeforeSendHeaders.listeners;
+        const listeners = this.listeners;
         for (let i = 0; i < listeners.length; i++) {
           if (name === listeners[i][0].name) {
-            browser.webRequest.onBeforeSendHeaders.listeners = listeners.slice(0,i).concat(listeners.splice(i+1));
+            this.listeners.splice(i+1));
             return;
           }
         }
@@ -140,30 +155,35 @@ const browser = {
         if (listener.name == "") {
           listener.name = randomString(128);
         }
-        for (let i = 0; i < browser.webRequest.onHeadersReceived.listeners.length; i++) {
-          if (listener.name == browser.webRequest.onHeadersReceived.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (listener.name == this.listeners[i][0].name) {
             return;
           }
         }
-        browser.webRequest.onHeadersReceived.listeners.push([
+        this.listeners.push([
           listener,
           filter,
           extraInfoSpec]);
       },
       "hasListener": name => {
-        for (let i = 0; i < browser.webRequest.onHeadersReceived.listeners.length; i++) {
-          if (name == browser.webRequest.onHeadersReceived.listeners[i][0].name) {
+        for (let i = 0; i < this.listeners.length; i++) {
+          if (name == this.listeners[i][0].name) {
             return true;
           }
         }
         return false;
       },
+      "hasListeners": () => {
+//        if (!this.eventOptions_.supportsListeners)
+//          throw new Error('This event does not support listeners.');
+        return this.listeners.length > 0;
+      },
       "listeners": [],
       "removeListener": name => {
-        const listeners = browser.webRequest.onHeadersReceived.listeners;
+        const listeners = this.listeners;
         for (let i = 0; i < listeners.length; i++) {
           if (name === listeners[i][0].name) {
-            browser.webRequest.onHeadersReceived.listeners = listeners.slice(0,i).concat(listeners.splice(i+1));
+            this.listeners.splice(i+1));
             return;
           }
         }
@@ -172,24 +192,4 @@ const browser = {
     }
   }
 };
-
-/* automatically generated details object of HTTP request */
-
-var details = {
-  /* ... */
-};
-
-/* automatically generated series of blocking and non-blocking listeners for above targeted request */
-
-(function(details){
-  // callback here
-  return details;
-})(details);
-(async function(details){
-  // callback here  
-})(details);
-(function(details){
-  // callback here
-  return details;
-})(details);
 

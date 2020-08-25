@@ -36,6 +36,40 @@
     error:nil];
 }
 
+/*
+  Returns an array of decoded URL form values.
+
+  @[
+    @[@"name", @"value1", @"value2"],
+    @["nameWithoutValue"]
+  ]
+*/
++(NSArray *)getDecodedURLParameters:(NSString *)encoded {
+  NSMutableArray * arr = [NSMutableArray array];
+  NSArray * params = [encoded
+    componentsSeparatedByString:@"&"];
+  const NSRegularExpression * const regexPlusSymbol = [NSRegularExpression
+    regularExpressionWithPattern:@"[+]"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  for (NSString * thisParam in params) {
+    const NSString * const thisParamEscaped = [regexPlusSymbol
+      stringByReplacingMatchesInString:thisParam
+      options:0
+      range:NSMakeRange(0, [thisParam length])
+      withTemplate:@" "];
+    NSMutableArray * decodedParams = [NSMutableArray array];
+    NSArray * encodedParams = [thisParamEscaped
+      componentsSeparatedByString:@"="];
+    for (NSString * thisEncodedParam in encodedParams) {
+      [decodedParams
+        addObject:[thisEncodedParam stringByRemovingPercentEncoding]];
+    }
+    [arr addObject:decodedParams];
+  }
+  return arr;
+}
+
 +(NSURL *)upgradeScheme:(NSURL *)URL {
   NSString * const insecureURL = [NSString
     stringWithFormat:@"%@", [URL absoluteURL]];
