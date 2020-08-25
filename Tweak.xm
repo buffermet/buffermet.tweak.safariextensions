@@ -7,6 +7,10 @@
 -(unsigned long long)hash;
 @end
 
+@interface NSURLRequest (SafariExtensions)
+-(long)requestID;
+@end
+
 NSDictionary * const extensions = @{
   @"0": @{
     @"manifest": @{
@@ -138,7 +142,7 @@ NSDictionary * const extensions = @{
 
 // faults
 -(id)dataTaskWithRequest:(NSURLRequest *)arg1 {
-  NSLog(@"abla --- %lld ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
+  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
 //NSLog(@"abla --- %@%@", @"-(id)dataTaskWithRequest:", arg1);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
@@ -426,6 +430,13 @@ NSDictionary * const extensions = @{
 %end
 
 %ctor {
+/*
+Instances:
+ctor {
+  SEWR: SEWebRequest,
+  : SEWebRequest,
+}
+*/
   %init;
   NSString * bundleID = [[NSBundle mainBundle] bundleIdentifier];
 //  NSLog(@"abla --- bundleID=%@", bundleID);

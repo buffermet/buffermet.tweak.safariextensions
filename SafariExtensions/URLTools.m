@@ -37,13 +37,13 @@
 }
 
 /*
-  Returns an array of decoded URL form values.
-
-  @[
-    @[@"name", @"value1", @"value2"],
-    @["nameWithoutValue"]
-  ]
-*/
+ *  Returns an array of decoded URL form values.
+ *
+ *  @[
+ *    @[@"name", @"value1", @"value2"],
+ *    @["nameWithoutValue"]
+ *  ]
+ */
 +(NSArray *)getDecodedURLParameters:(NSString *)encoded {
   NSMutableArray * arr = [NSMutableArray array];
   NSArray * params = [encoded
@@ -66,6 +66,63 @@
         addObject:[thisEncodedParam stringByRemovingPercentEncoding]];
     }
     [arr addObject:decodedParams];
+  }
+  return arr;
+}
+
+/*
+ *  Returns a dictionary of headers that were found in a string
+ *
+ *  @{
+ *    @"Content-Type": @["multipart/form-data; boundary=\"538948530\""],
+ *    @"User-Agent": @["Mozilla ..."]
+ *  }
+ */
++(NSDictionary *)getHeaders:(NSString *)rawHeaders {
+  NSMutableDictionary * dict = [NSMutableDictionary new];
+  for (NSString * headerString in [rawHeaders
+    componentsSeparatedByString:@"\r\n"]
+  ) {
+    NSRegularExpression * regexp = [NSRegularExpression
+      regularExpressionWithPattern:@"^\\s*(.*?)\\s*:\\s*(.*?)\r\n$"
+      options:NSRegularExpressionCaseInsensitive
+      error:nil];
+    const NSString * const name = [regexp
+      stringByReplacingMatchesInString:headerString
+      options:0
+      range:NSMakeRange(0, [headerString length])
+      withTemplate:@"$1"];
+    const NSString * const value = [regexp
+      stringByReplacingMatchesInString:headerString
+      options:0
+      range:NSMakeRange(0, [headerString length])
+      withTemplate:@"$2"];
+    if (![name isEqual:@""]) {
+      if (dict[name]) {
+        [dict[name] addObject:value];
+      } else {
+        dict[name] = @[value];
+      }
+    }
+  }
+  return dict;
+}
+
+/*
+ *  Returns an array of strings that were separated by ";".
+ *
+ *  @[
+ *    @"form-data",
+ *    @"name=\"attachment\"",
+ *    @"filename=   \"/Users/buffermet/lol.png\""
+ *  ]
+ */
++(NSArray *)getHeaderParts(NSString *)headerValue {
+  NSMutableArray * arr = [NSMutableArray array];
+  NSArray * matches = [headerValue
+    componentsSeparatedByString:@";"];
+  for (NSString * match in matches) {
+    [arr addObject:stripTrailingWhitespace(match)];
   }
   return arr;
 }

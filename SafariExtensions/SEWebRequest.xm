@@ -1,10 +1,16 @@
+// https://chromium.googlesource.com/chromium/src/+/master/extensions/browser/api
 // https://chromium.googlesource.com/chromium/src/+/master/extensions/common/api/web_request.json
 // https://searchfox.org/mozilla-central/rev/3345af4b5/toolkit/modules/addons/WebRequestUpload.jsm#258-269
 
+#import <WebKit/WebKit.h>
 #import "SEWebRequest.h"
 #import "URLTools.h"
 //#import "SEJSContext.h"
 #import <JavaScriptCore/JavaScriptCore.h>
+
+@interface NSURLRequestInternal
+-(unsigned long long)hash;
+@end
 
 /*
 // example hook.js
@@ -136,47 +142,6 @@ NSString * stripTrailingDoubleQuotes(NSString * str) {
     options:0
     range:NSMakeRange(0, [str length])
     withTemplate:@"$1"];
-}
-
-NSArray * getHeaderParts(NSString * headerValue) {
-  NSMutableArray * arr = [NSMutableArray array];
-  NSArray * matches = [headerValue
-    componentsSeparatedByString:@";"];
-  for (NSString * match in matches) {
-    [arr addObject:stripTrailingWhitespace(match)];
-  }
-  return arr;
-}
-
-NSDictionary * getHeaders(NSString * rawHeaders) {
-  NSMutableDictionary * dict = [NSMutableDictionary new];
-  for (NSString * headerString in [rawHeaders
-    componentsSeparatedByString:@"\r\n"]
-  ) {
-    NSRegularExpression * regexp = [NSRegularExpression
-      regularExpressionWithPattern:@"^\\s*(.*?)\\s*:\\s*(.*)\\s*$"
-      options:NSRegularExpressionCaseInsensitive
-      error:nil];
-    const NSString * const name = [[regexp
-      stringByReplacingMatchesInString:headerString
-      options:0
-      range:NSMakeRange(0, [headerString length])
-      withTemplate:@"$1"]
-        lowercaseString];
-    const NSString * const value = [regexp
-      stringByReplacingMatchesInString:headerString
-      options:0
-      range:NSMakeRange(0, [headerString length])
-      withTemplate:@"$2"];
-    if (![name isEqual:@""]) {
-      if (dict[name]) {
-        [dict[name] addObject:value];
-      } else {
-        dict[name] = @[value];
-      }
-    }
-  }
-  return dict;
 }
 
 NSArray * getBufferedStreamChunks(NSInputStream * inputStream, int size) {
@@ -471,6 +436,11 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
   }
 //  },
 //  \"requestId\": null,
+NSDictionary * request
+  unsigned long long requestHash = [MSHookIvar<NSURLRequestInternal *>(
+    request,
+    "_internal") hash];
+
 //  \"tabId\": null,
 //  \"thirdParty\": null,
 //  \"timeStamp\": null,
