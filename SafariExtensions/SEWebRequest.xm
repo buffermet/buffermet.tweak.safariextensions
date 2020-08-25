@@ -120,30 +120,6 @@ NSArray * int32ArrayFromData(NSData * data) {
   return arr;
 }
 
-NSString * stripTrailingWhitespace(NSString * str) {
-  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
-    regularExpressionWithPattern:@"^\\s*(.*)\\s*$"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  return [regexTrailingWhitespace
-    stringByReplacingMatchesInString:str
-    options:0
-    range:NSMakeRange(0, [str length])
-    withTemplate:@"$1"];
-}
-
-NSString * stripTrailingDoubleQuotes(NSString * str) {
-  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
-    regularExpressionWithPattern:@"^[\"]*(.*)[\"]*$"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  return [regexTrailingWhitespace
-    stringByReplacingMatchesInString:str
-    options:0
-    range:NSMakeRange(0, [str length])
-    withTemplate:@"$1"];
-}
-
 NSArray * getBufferedStreamChunks(NSInputStream * inputStream, int size) {
   const int BUFFER_LENGTH = 8192;
   uint8_t buffer[size];

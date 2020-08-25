@@ -2,6 +2,11 @@
 
 @implementation URLTools
 
+/**
+ * Returns a regexp selector using the specified domain specifier.
+ * Domain specifiers can contain a wildcard at the start of a domain
+ * (e.g. *.google.com). "<all_urls>" is treated as `.*`
+ */
 +(NSRegularExpression *)domainSpecifierToRegexpIgnoreCase:(NSString *)domainSpecifier {
   NSRegularExpression * regexp = [NSRegularExpression
     regularExpressionWithPattern:@"[-]"
@@ -36,13 +41,9 @@
     error:nil];
 }
 
-/*
- *  Returns an array of decoded URL form values.
- *
- *  @[
- *    @[@"name", @"value1", @"value2"],
- *    @["nameWithoutValue"]
- *  ]
+/**
+ * Returns an array of decoded URL form values.
+ * (example: @[@[@"name", @"value1", @"value2"], @["nameWithoutValue"]])
  */
 +(NSArray *)getDecodedURLParameters:(NSString *)encoded {
   NSMutableArray * arr = [NSMutableArray array];
@@ -70,13 +71,12 @@
   return arr;
 }
 
-/*
- *  Returns a dictionary of headers that were found in a string
- *
- *  @{
- *    @"Content-Type": @["multipart/form-data; boundary=\"538948530\""],
- *    @"User-Agent": @["Mozilla ..."]
- *  }
+/**
+ * Returns a dictionary of headers that were found in a string
+ * @{
+ *   @"Content-Type": @["multipart/form-data; boundary=\"538948530\""],
+ *   @"User-Agent": @["Mozilla ..."]
+ * }
  */
 +(NSDictionary *)getHeaders:(NSString *)rawHeaders {
   NSMutableDictionary * dict = [NSMutableDictionary new];
@@ -108,16 +108,11 @@
   return dict;
 }
 
-/*
- *  Returns an array of strings that were separated by ";".
- *
- *  @[
- *    @"form-data",
- *    @"name=\"attachment\"",
- *    @"filename=   \"/Users/buffermet/lol.png\""
- *  ]
+/**
+ * Returns an array of strings that were separated by ";".
+ * @[@"form-data", @"name=\"attachment\"", @"filename=\"/Users/buffermet/lol.png\""]
  */
-+(NSArray *)getHeaderParts(NSString *)headerValue {
++(NSArray *)getHeaderParts:(NSString *)headerValue {
   NSMutableArray * arr = [NSMutableArray array];
   NSArray * matches = [headerValue
     componentsSeparatedByString:@";"];
@@ -127,7 +122,22 @@
   return arr;
 }
 
-+(NSURL *)upgradeScheme:(NSURL *)URL {
+/**
+ * Removes all whitespace at the start and end of a string.
+ */
++(NSString *)stripTrailingWhitespace:(NSString *)str {
+  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
+    regularExpressionWithPattern:@"^\\s*(.*)\\s*$"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  return [regexTrailingWhitespace
+    stringByReplacingMatchesInString:str
+    options:0
+    range:NSMakeRange(0, [str length])
+    withTemplate:@"$1"];
+}
+
++(NSURL *)upgradeNSURLScheme:(NSURL *)URL {
   NSString * const insecureURL = [NSString
     stringWithFormat:@"%@", [URL absoluteURL]];
   NSError * err = nil;
@@ -141,6 +151,64 @@
     range:NSMakeRange(0, [insecureURL length])
     withTemplate:@"https:"];
   return [NSURL URLWithString:secureURL];
+}
+
++(NSArray *)urlSpecifierToRegexpIgnoreCaseSet:(NSString *)urlSpecifier {
+  NSRegularExpression * regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"((?:[a-z-]+|[*]):)//((?:\*\.[a-z]{1,63}|(?:(?:\*\.|)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{1,63})))(/[^?#]*)([?][^#]+)?([#].*)?"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  NSString * schemeSpecifier = [regexp
+    stringByReplacingMatchesInString:urlSpecifier
+    options:0
+    range:NSMakeRange(0, [urlSpecifier rlength]) 
+    withTemplate:@"$1"]; 
+  NSString * domainSpecifier = [regexp
+    stringByReplacingMatchesInString:urlSpecifier
+    options:0
+    range:NSMakeRange(0, [urlSpecifier rlength]) 
+    withTemplate:@"$2"]; 
+  NSString * pathSpecifier = [regexp
+    stringByReplacingMatchesInString:urlSpecifier
+    options:0
+    range:NSMakeRange(0, [urlSpecifier rlength]) 
+    withTemplate:@"$3"]; 
+  NSString * querySpecifier = [regexp
+    stringByReplacingMatchesInString:urlSpecifier
+    options:0
+    range:NSMakeRange(0, [urlSpecifier rlength]) 
+    withTemplate:@"$4"]; 
+  NSString * anchorSpecifier = [regexp
+    stringByReplacingMatchesInString:urlSpecifier
+    options:0
+    range:NSMakeRange(0, [urlSpecifier rlength]) 
+    withTemplate:@"$5"]; 
+  return 
+}
+
++(NSArray *)schemeSpecifierToRegexpIgnoreCase:(NSString *)schemeSpecifier {
+  NSRegularExpression * regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"^[*]"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  domainSpecifier = [regexp
+    stringByReplacingMatchesInString:domainSpecifier
+    options:0
+    range:NSMakeRange(0, [domainSpecifier length])
+    withTemplate:@"()"];
+  regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"[.]"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  domainSpecifier = [regexp
+    stringByReplacingMatchesInString:domainSpecifier
+    options:0
+    range:NSMakeRange(0, [domainSpecifier length])
+    withTemplate:@"\\."]; 
+  return [NSRegularExpression
+    regularExpressionWithPattern:domainSpecifier
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
 }
 
 @end

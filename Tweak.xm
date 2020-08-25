@@ -49,6 +49,10 @@ NSDictionary * const extensions = @{
 -(void)applicationDidFinishLaunching:(id)arg1 {
   %orig;
   NSLog(@"abla --- %@", @"applicationDidFinishLaunching");
+  JSContext * jsContext = [%c(JSContext) new];
+  [jsContext[@"console"]
+    invokeMethod:@"log"
+    withArguments:@"abla 123456"];
 }
 
 %end

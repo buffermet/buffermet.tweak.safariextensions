@@ -1,6 +1,8 @@
 @interface URLTools : NSObject
 +(NSRegularExpression *)domainSpecifierToRegexpIgnoreCase:(NSString *)domainSpecifier;
 +(NSArray *)getDecodedURLParameters:(NSString *)encoded;
-+(NSURL *)upgradeScheme:(NSURL *)URL;
++(NSRegularExpression *)pathSpecifierToRegexpIgnoreCase:(NSString *)pathSpecifier;
++(NSString *)stripTrailingWhitespace:(NSString *)str;
++(NSURL *)upgradeNSURLScheme:(NSURL *)URL;
 @end
 
