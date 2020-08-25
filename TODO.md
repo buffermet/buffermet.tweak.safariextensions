@@ -19,3 +19,53 @@ Some of these classes contain no methods that require interception, I'm just spi
   - [ ] XMLHttpRequestUpload
   - [ ] console (logging options for extension consoles)
 
+JavaScript APIs:
+
+- [ ] alarms 
+- [ ] bookmarks 
+- [ ] browserAction 
+- [ ] browserSettings 
+- [ ] browsingData 
+- [ ] captivePortal 
+- [ ] clipboard
+- [ ] commands 
+- [ ] contentScripts 
+- [ ] contextualIdentities 
+- [ ] cookies
+- [ ] devtools
+  - [ ] inspectedWindow
+  - [ ] network
+  - [ ] panels
+- [ ] dns
+- [ ] downloads
+- [ ] events
+- [ ] extension
+- [ ] extensionTypes
+- [ ] find
+- [ ] history
+- [ ] i18n
+- [ ] identity
+- [ ] idle
+- [ ] management
+- [ ] menus
+- [ ] notifications
+- [ ] omnibox
+- [ ] pageAction
+- [ ] permissions
+- [ ] pkcs11
+- [ ] privacy
+- [ ] proxy
+- [ ] runtime
+- [ ] search
+- [ ] sessions
+- [ ] sidebarAction
+- [ ] storage
+- [ ] tabs
+- [ ] theme
+- [ ] topSites
+- [ ] types
+- [ ] userScripts
+- [ ] webNavigation
+- [ ] webRequest
+- [ ] windows
+

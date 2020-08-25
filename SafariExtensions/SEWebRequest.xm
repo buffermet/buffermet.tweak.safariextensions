@@ -308,8 +308,8 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
   JSValue * detailsRequestBodyRaw;
   NSString * const contentTypeLowercase = [[request
     valueForHTTPHeaderField:@"Content-Type"] lowercaseString];
-  NSArray * contentTypeParams = getHeaderParts(contentTypeLowercase);
-  if ([contentTypeParams containsObject:@"multipart/form-data"]) {
+  NSArray * contentTypeParameterString = getHeaderParts(contentTypeLowercase);
+  if ([contentTypeParameterString containsObject:@"multipart/form-data"]) {
     NSMutableDictionary * formData = [NSMutableDictionary new];
     /* debug */
     NSString * boundary = [[NSRegularExpression
@@ -397,7 +397,7 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
     detailsRequestBodyFormData = [%c(JSValue)
       valueWithObject:formData
       inContext:jsContext];
-  } else if ([contentTypeParams containsObject:@"application/x-www-form-urlencoded"]) {
+  } else if ([contentTypeParameterString containsObject:@"application/x-www-form-urlencoded"]) {
     NSMutableDictionary * urlDecodedForm = [NSMutableDictionary new];
     const NSArray * bufferedChunks = getBufferedStreamChunks(
       [request HTTPBodyStream],
