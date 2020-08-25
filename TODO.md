@@ -1,4 +1,4 @@
-An entry in this list is checked (✅) once it has demonstrated to handle the same input and produce the same output as the WebExtensions API as described in <a>Mozilla's</a> and/or <a>Chrome's</a> documentation, or with an adaptation of those sources as described in its accompanying documentation.
+An entry in this list is checked (✅) once it has been demonstrated to handle the same input and produce the same output as the WebExtensions API as described in <a>Mozilla's</a> and/or <a>Chrome's</a> documentation, or with an adaptation of those sources as described in its accompanying documentation.
 
 JavaScript APIs:
 
