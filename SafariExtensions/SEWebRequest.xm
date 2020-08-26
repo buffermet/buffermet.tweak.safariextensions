@@ -120,6 +120,18 @@ NSArray * int32ArrayFromData(NSData * data) {
   return arr;
 }
 
+NSString * stripTrailingDoubleQuotes(NSString * str) {
+  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
+    regularExpressionWithPattern:@"^[\"]*(.*)[\"]*$"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  return [regexTrailingWhitespace
+    stringByReplacingMatchesInString:str
+    options:0
+    range:NSMakeRange(0, [str length])
+    withTemplate:@"$1"];
+}
+
 NSArray * getBufferedStreamChunks(NSInputStream * inputStream, int size) {
   const int BUFFER_LENGTH = 8192;
   uint8_t buffer[size];
@@ -249,7 +261,8 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
   JSValue * detailsRequestBodyRaw;
   NSString * const contentTypeLowercase = [[request
     valueForHTTPHeaderField:@"Content-Type"] lowercaseString];
-  NSArray * contentTypeParameterString = getHeaderParts(contentTypeLowercase);
+  NSArray * contentTypeParameterString = [URLTools
+    getHeaderParts:contentTypeLowercase];
   if ([contentTypeParameterString containsObject:@"multipart/form-data"]) {
     NSMutableDictionary * formData = [NSMutableDictionary new];
     /* debug */
@@ -289,11 +302,14 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
       }
       NSString * const rawHeaders = [thisFormDataPart
         substringWithRange:NSMakeRange(0, endIx)];
-      NSDictionary * const thisFormDataPartHeaders = getHeaders(rawHeaders);
+      NSDictionary * const thisFormDataPartHeaders = [URLTools
+        getHeaders:rawHeaders];
       NSString * const contentDispositionString = thisFormDataPartHeaders[@"content-disposition"];
       if (
            !contentDispositionString
-        || ![getHeaderParts(contentDispositionString) containsObject:@"form-data"]
+        || ![[URLTools
+             getHeaderParts:contentDispositionString]
+               containsObject:@"form-data"]
       ) {
         // throw error: invalid MIME stream: No valid Content-Disposition header
         continue;

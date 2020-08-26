@@ -52,7 +52,7 @@ NSDictionary * const extensions = @{
   JSContext * jsContext = [%c(JSContext) new];
   [jsContext[@"console"]
     invokeMethod:@"log"
-    withArguments:@"abla 123456"];
+    withArguments:@[@"abla 123456"]];
 }
 
 %end
