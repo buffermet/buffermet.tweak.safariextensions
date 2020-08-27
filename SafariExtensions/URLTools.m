@@ -3,14 +3,17 @@
 @implementation URLTools
 
 /**
- * Returns a regexp selector using the specified domain specifier.
+ * Returns a regexp selector using the specified domain specifier string.
  * Domain specifiers can contain a wildcard at the start of a domain
- * (e.g. *.google.com). "<all_urls>" is treated as `.*`
- */
+ * (example input: *.google.com). 
+ * (example output: [NSRegularExpression
+ *   regularExpressionWithPattern:@""
+                             *   :])
+ **/
 +(NSRegularExpression *)domainSpecifierToRegexpIgnoreCase:(NSString *)domainSpecifier {
   NSRegularExpression * regexp = [NSRegularExpression
     regularExpressionWithPattern:@"[-]"
-    options:NSRegularExpressionCaseInsensitive
+    options:0
     error:nil];
   domainSpecifier = [regexp
     stringByReplacingMatchesInString:domainSpecifier
@@ -19,7 +22,7 @@
     withTemplate:@"\\-"];
   regexp = [NSRegularExpression
     regularExpressionWithPattern:@"^[*][.]"
-    options:NSRegularExpressionCaseInsensitive
+    options:0
     error:nil];
   domainSpecifier = [regexp
     stringByReplacingMatchesInString:domainSpecifier
@@ -28,25 +31,35 @@
     withTemplate:@"((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?.)+)"];
   regexp = [NSRegularExpression
     regularExpressionWithPattern:@"[.]"
-    options:NSRegularExpressionCaseInsensitive
+    options:0
     error:nil];
   domainSpecifier = [regexp
     stringByReplacingMatchesInString:domainSpecifier
     options:0
     range:NSMakeRange(0, [domainSpecifier length])
     withTemplate:@"\\."];
+  regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"<all_urls>"
+    options:0
+    error:nil];
+  domainSpecifier = [regexp
+    stringByReplacingMatchesInString:domainSpecifier
+    options:0
+    range:NSMakeRange(0, [domainSpecifier length])
+    withTemplate:@".*"];
   return [NSRegularExpression
     regularExpressionWithPattern:domainSpecifier
-    options:NSRegularExpressionCaseInsensitive
+    options:0
     error:nil];
 }
 
 /**
- * Returns an array of decoded URL form values.
- * (example: @[@[@"name", @"value1", @"value2"], @["nameWithoutValue"]])
+ * Returns a dictionary of decoded URL form values.
+ * (example input: "?data=A93j20%3D%3D&protocol=https%3A&protocol=wss%3A&a")
+ * (example output: @{@"data": @[@"A93j20=="], @"protocol": @[@"https:", @"wss:"]})
  */
-+(NSArray *)getDecodedURLParameters:(NSString *)encoded {
-  NSMutableArray * arr = [NSMutableArray array];
++(NSDictionary *)getDecodedURLParameters:(NSString *)encoded {
+  NSMutableArray * dict = [NSMutableDictionary new];
   NSArray * params = [encoded
     componentsSeparatedByString:@"&"];
   const NSRegularExpression * const regexPlusSymbol = [NSRegularExpression
@@ -109,8 +122,10 @@
 }
 
 /**
- * Returns an array of strings that were separated by ";".
- * (example: @[@"form-data", @"name=\"attachment\"", @"filename=\"/path/img.png\""])
+ * Returns an array of strings that were separated by ";" and stripped from trailing
+ * whitespaces.
+ * (example input: @"form-data; name=\"attachment\"; filename=\"/path/img.png\"")
+ * (example output: @[@"form-data", @"name=\"attachment\"", @"filename=\"/path/img.png\""])
  */
 +(NSArray *)getHeaderParts:(NSString *)headerValue {
   NSMutableArray * arr = [NSMutableArray array];
@@ -126,78 +141,48 @@
 /**
  * Returns a regexp selector that will match the specified anchor string.
  * (wilcards are not allowed)
+ * (example input: @"#anyBytes()")
+ * (example output: [NSRegularExpression
+ *   regularExpressionWithPattern:@"#anyBytes\\(\\)"
+ *   options:NSRegularExpressionCaseInsensitive]
+ *   error:nil)]
  */
-+(NSArray *)anchorSpecifierToRegexpIgnoreCase:(NSString *)anchorSpecifier {
-  NSString * openingSquareBracketTag = [[NSProcessInfo processInfo] globallyUniqueString];
-  NSRegularExpression * regexp = [NSRegularExpression // [ and ]
-    regularExpressionWithPattern:@"[[]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:anchorSpecifier
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:openingSquareBracketTag];
-  regexp = [NSRegularExpression
-    regularExpressionWithPattern:@"[]]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:anchorSpecifier
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[]]"];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:openingSquareBracketTag
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[[]"];
-  regexp = [NSRegularExpression /* ( */
-    regularExpressionWithPattern:@"[(]"
++(NSRegularExpression *)anchorSpecifierToRegexpIgnoreCase:(NSString *)anchorSpecifier {
+  NSRegularExpression * regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"[?[\\]{}()*\\\\]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
   anchorSpecifier = [regexp
     stringByReplacingMatchesInString:anchorSpecifier  
     options:0
     range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[(]"];
-  regexp = [NSRegularExpression /* ) */
-    regularExpressionWithPattern:@"[)]"
+    withTemplate:@"\\$1"];
+  return [NSRegularExpression
+    regularExpressionWithPattern:anchorSpecifier
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+}
+
+/**
+ * Returns a regexp selector that will match the specified path string.
+ * (wilcards are allowed)
+ * (example input: @"/api/*")
+ * (example output: [NSRegularExpression
+ *   regularExpressionWithPattern:@"/api/.*"
+ *   options:NSRegularExpressionCaseInsensitive]
+ *   error:nil)]
+ */
++(NSArray *)pathSpecifierToRegexpIgnoreCase:(NSString *)pathSpecifier {
+  NSRegularExpression * regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"[?[\\]{}()\\\\]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
   anchorSpecifier = [regexp
     stringByReplacingMatchesInString:anchorSpecifier  
     options:0
     range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[)]"];
-  regexp = [NSRegularExpression /* { */
-    regularExpressionWithPattern:@"[{]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:anchorSpecifier  
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[{]"];
-  regexp = [NSRegularExpression /* } */
-    regularExpressionWithPattern:@"[}]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:anchorSpecifier  
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[}]"];
-  regexp = [NSRegularExpression /* \ */
-    regularExpressionWithPattern:@"[\\]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:anchorSpecifier  
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[\\]"];
-  regexp = [NSRegularExpression /* * */
+    withTemplate:@"\\$1"];
+  NSRegularExpression * regexp = [NSRegularExpression
     regularExpressionWithPattern:@"[*]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
@@ -205,25 +190,11 @@
     stringByReplacingMatchesInString:anchorSpecifier  
     options:0
     range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[*]"];
-  regexp = [NSRegularExpression /* | */
-    regularExpressionWithPattern:@"[|]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:anchorSpecifier  
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"[|]"];
+    withTemplate:@".*"];
   return [NSRegularExpression
     regularExpressionWithPattern:anchorSpecifier
-    options:0
-    range:
-  ];
-}
-
-+(NSArray *)pathSpecifierToRegexpIgnoreCase:(NSString *)pathSpecifier {
-  return nil;
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
 }
 
 +(NSArray *)querySpecifierToRegexpIgnoreCase:(NSString *)querySpecifier {
@@ -245,23 +216,31 @@
     withTemplate:@"$1"];
 }
 
-+(NSRegularExpression *)schemeSpecifierToRegexpIgnoreCase:(NSString *)schemeSpecifier {
+/**
+ * Returns a regexp selector using the specified protocol string.
+ * (example input: @"*:")
+ * (example output: [NSRegularExpression
+ *   regularExpressionWithPattern:@"[a-z-]+:"
+ *   options:NSRegularExpressionCaseInsensitive
+ *   error:nil])
+ */
++(NSRegularExpression *)protocolSpecifierToRegexpIgnoreCase:(NSString *)protocolSpecifier {
   NSRegularExpression * regexp = [NSRegularExpression
     regularExpressionWithPattern:@"[*]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
-  schemeSpecifier = [regexp
-    stringByReplacingMatchesInString:schemeSpecifier
+  protocolSpecifier = [regexp
+    stringByReplacingMatchesInString:protocolSpecifier
     options:0
-    range:NSMakeRange(0, [schemeSpecifier length])
+    range:NSMakeRange(0, [protocolSpecifier length])
     withTemplate:@"[a-z-]+"];
   return [NSRegularExpression
-    regularExpressionWithPattern:schemeSpecifier
+    regularExpressionWithPattern:protocolSpecifier
     options:NSRegularExpressionCaseInsensitive
     error:nil];
 }
 
-+(NSURL *)upgradeNSURLScheme:(NSURL *)URL {
++(NSURL *)upgradeNSURLprotocol:(NSURL *)URL {
   NSString * const insecureURL = [NSString
     stringWithFormat:@"%@", [URL absoluteURL]];
   NSError * err = nil;
@@ -282,7 +261,7 @@
     regularExpressionWithPattern:@"((?:[a-z-]+|[*]):)//((?:\\*\\.[a-z]{1,63}|(?:(?:\\*\\.|)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+(?:[a-z]{1,63})))(/[^?#]*)([?][^#]+)?([#].*)?"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
-  NSString * schemeSpecifier = [regexp
+  NSString * protocolSpecifier = [regexp
     stringByReplacingMatchesInString:urlSpecifier
     options:0
     range:NSMakeRange(0, [urlSpecifier length]) 
@@ -308,7 +287,7 @@
     range:NSMakeRange(0, [urlSpecifier length]) 
     withTemplate:@"$5"];
   return @[
-    [self schemeSpecifierToRegexpIgnoreCase:schemeSpecifier],
+    [self protocolSpecifierToRegexpIgnoreCase:protocolSpecifier],
     [self domainSpecifierToRegexpIgnoreCase:domainSpecifier],
     [self pathSpecifierToRegexpIgnoreCase:pathSpecifier],
     [self querySpecifierToRegexpIgnoreCase:querySpecifier],

@@ -43,16 +43,58 @@ NSDictionary * const extensions = @{
   }
 };
 
+@interface MyViewController : UIViewController <WKNavigationDelegate>
+@property (strong, nonatomic) WKWebView * webView;
+@end
+
+@implementation MyViewController
+
+-(void)viewDidLoad {
+  [super viewDidLoad];
+  WKWebViewConfiguration * configuration = [WKWebViewConfiguration new];
+  configuration.suppressesViewportScaleRendering = YES;
+  configuration.ignoresViewportScaleLimits = NO;
+  configuration.dataDetectorTypes = WKDataDetectorTypeNone;
+  CGRect frame = CGRectMake(0,0,0,0);
+//  CGRect frame = self.view.bounds;
+//  CGFloat tabBarHeight = frame.size.height
+  _webView = [[WKWebView alloc]
+    initWithFrame:frame
+    configuration:configuration];
+  _webView.navigationDelegate = self;
+  [self.view addSubview:_webView];
+  [self.view sendSubviewToBack:_webView];
+  [_webView
+    loadHTMLString:@"<!DOCTYPE HTML><html><head></head><body><iframe id=\"test\"></body>></html>"
+    baseURL:[NSURL
+      URLWithString:@"safari-extension://ffwneifuwefnjweiofweghjoi/_generated_background_page.html"]];
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  
+}
+
+@end
+
 %group SpringBoard
 %hook SpringBoard
 
 -(void)applicationDidFinishLaunching:(id)arg1 {
   %orig;
   NSLog(@"abla --- %@", @"applicationDidFinishLaunching");
-  JSContext * jsContext = [%c(JSContext) new];
-  [jsContext[@"console"]
-    invokeMethod:@"log"
-    withArguments:@[@"abla 123456"]];
+//  JSContext * jsContext = [%c(JSContext) new];
+//  [jsContext[@"console"]
+//    invokeMethod:@"log"
+//    withArguments:@[@"abla 123456"]];
+  WKWebView * wv = [%c(WKWebView) new];
+  wv = [wv initWithFrame:CGRectMake(0,0,0,0)];
+  NSLog(@"abla --- %@", wv);
+  WKNavigation * wn = [wv
+    loadHTMLString:@"<!DOCTYPE HTML><html><head></head><body><iframe id=\"test\"></body>></html>"
+    baseURL:[NSURL
+      URLWithString:@"safari-extension://ffwneifuwefnjweiofweghjoi/_generated_background_page.html"]];
+  NSLog(@"abla --- %@", wn);
 }
 
 %end

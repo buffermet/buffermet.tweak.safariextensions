@@ -34,9 +34,9 @@ NSDictionary * const extensions = @{
 };
 */
 
-const NSString * const PATH_EXTENSIONS_LIST = @"";
-const NSString * const PATH_EXTENSION_ = @"";
-const NSString * const PATH_EXTENSIONS_LIST = @"";
+//const NSString * const PATH_EXTENSIONS_LIST = @"";
+//const NSString * const PATH_EXTENSION_ = @"";
+//const NSString * const PATH_EXTENSIONS_LIST = @"";
 
 @implementation SEPExtensionsListController
 

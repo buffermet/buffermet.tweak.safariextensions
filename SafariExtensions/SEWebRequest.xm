@@ -137,9 +137,10 @@ NSArray * getBufferedStreamChunks(NSInputStream * inputStream, int size) {
   uint8_t buffer[size];
   NSMutableArray * arr = [NSMutableArray array];
   NSUInteger result;
-  while ((result = [inputStream
-    read:buffer
-    maxLength:BUFFER_LENGTH])
+  while (
+    (result = [inputStream
+      read:buffer
+      maxLength:BUFFER_LENGTH])
   ) {
     if (result > 0) {
       [arr addObject:[NSString
@@ -156,15 +157,17 @@ NSArray * getBufferedStreamChunksAndSplit(NSInputStream * inputStream, int size,
   uint8_t buffer[size];
   NSMutableArray * arr = [NSMutableArray array];
   NSUInteger result;
-  while ((result = [inputStream
-    read:buffer
-    maxLength:BUFFER_LENGTH])
+  while (
+    (result = [inputStream
+      read:buffer
+      maxLength:BUFFER_LENGTH])
   ) {
     if (result > 0) {
-      for (NSString * part in [[NSString
-        stringWithFormat:@"%s", buffer]
-          componentsSeparatedByString:boundary])
-      {
+      for (
+        NSString * part in
+          [[NSString stringWithFormat:@"%s", buffer]
+            componentsSeparatedByString:boundary]
+      ) {
         [arr addObject:part];
       }
     } else {
@@ -314,7 +317,8 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
         // throw error: invalid MIME stream: No valid Content-Disposition header
         continue;
       }
-      NSArray * const headerParts = getHeaderParts(contentDispositionString);
+      NSArray * const headerParts = [URLTools
+        getHeaderParts:contentDispositionString];
       NSString * name = @"";
       NSString * filename;
       for (NSString * thisHeaderPart in headerParts) {
@@ -428,10 +432,13 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
   }
 //  },
 //  \"requestId\": null,
-NSDictionary * request
+
+/*
+  NSDictionary * request ....
   unsigned long long requestHash = [MSHookIvar<NSURLRequestInternal *>(
     request,
     "_internal") hash];
+*/
 
 //  \"tabId\": null,
 //  \"thirdParty\": null,
