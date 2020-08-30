@@ -4,7 +4,9 @@
 +(NSArray *)getHeaderParts:(NSString *)headerValue;
 +(NSDictionary *)getHeaders:(NSString *)rawHeaders;
 +(NSRegularExpression *)pathSpecifierToRegexpIgnoreCase:(NSString *)pathSpecifier;
-+(NSString *)stripTrailingWhitespace:(NSString *)str;
-+(NSURL *)upgradeNSURLScheme:(NSURL *)URL;
++(NSString *)stripAllTrailingWhitespace:(NSString *)str;
++(NSString *)stripTrailingDoubleQuote:(NSString *)str;
+//+(NSString *)stripTrailingWhitespace:(NSString *)str;
++(NSURL *)upgradeNSURLProtocol:(NSURL *)URL;
 @end
 

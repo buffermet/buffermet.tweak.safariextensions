@@ -43,23 +43,35 @@ NSDictionary * const extensions = @{
   }
 };
 
+//@interface WKWebView : UIView
+//@end
+
+@interface WKNavigationDelegate : NSObject
+-(void)viewDidLoad;
+@end
+
+//@interface WKWebViewConfiguration : NSObject
+//@property (assign,nonatomic) BOOL ignoresViewportScaleLimits;
+//@property (assign,nonatomic) BOOL suppressesIncrementalRendering;
+//@property (assign,nonatomic) unsigned long long dataDetectorTypes;
+//@end
+
 @interface MyViewController : UIViewController <WKNavigationDelegate>
-@property (strong, nonatomic) WKWebView * webView;
+@property (strong,nonatomic) WKWebView * webView;
 @end
 
 @implementation MyViewController
 
 -(void)viewDidLoad {
   [super viewDidLoad];
-  WKWebViewConfiguration * configuration = [WKWebViewConfiguration new];
-  configuration.suppressesViewportScaleRendering = YES;
+  WKWebViewConfiguration * configuration = [%c(WKWebViewConfiguration) new];
+  configuration.suppressesIncrementalRendering = YES;
   configuration.ignoresViewportScaleLimits = NO;
   configuration.dataDetectorTypes = WKDataDetectorTypeNone;
-  CGRect frame = CGRectMake(0,0,0,0);
 //  CGRect frame = self.view.bounds;
 //  CGFloat tabBarHeight = frame.size.height
-  _webView = [[WKWebView alloc]
-    initWithFrame:frame
+  _webView = [[%c(WKWebView) alloc]
+    initWithFrame:CGRectMake(0,0,0,0)
     configuration:configuration];
   _webView.navigationDelegate = self;
   [self.view addSubview:_webView];
@@ -72,7 +84,6 @@ NSDictionary * const extensions = @{
 
 -(void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  
 }
 
 @end
