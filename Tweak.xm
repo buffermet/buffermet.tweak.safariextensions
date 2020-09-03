@@ -43,18 +43,9 @@ NSDictionary * const extensions = @{
   }
 };
 
-//@interface WKWebView : UIView
-//@end
-
 @interface WKNavigationDelegate : NSObject
 -(void)viewDidLoad;
 @end
-
-//@interface WKWebViewConfiguration : NSObject
-//@property (assign,nonatomic) BOOL ignoresViewportScaleLimits;
-//@property (assign,nonatomic) BOOL suppressesIncrementalRendering;
-//@property (assign,nonatomic) unsigned long long dataDetectorTypes;
-//@end
 
 @interface MyViewController : UIViewController <WKNavigationDelegate>
 @property (strong,nonatomic) WKWebView * webView;
@@ -63,6 +54,7 @@ NSDictionary * const extensions = @{
 @implementation MyViewController
 
 -(void)viewDidLoad {
+  NSLog(@"abla --- %@", @"MyViewController viewDidLoad");
   [super viewDidLoad];
   WKWebViewConfiguration * configuration = [%c(WKWebViewConfiguration) new];
   configuration.suppressesIncrementalRendering = YES;
@@ -80,10 +72,21 @@ NSDictionary * const extensions = @{
     loadHTMLString:@"<!DOCTYPE HTML><html><head></head><body><iframe id=\"test\"></body>></html>"
     baseURL:[NSURL
       URLWithString:@"safari-extension://ffwneifuwefnjweiofweghjoi/_generated_background_page.html"]];
+  [_webView
+    evaluateJavaScript:@"'test'.toString()"
+    completionHandler:^(id a, id b){
+      NSLog(@"abla --- %@ %@", a, b);
+    }];
 }
 
 -(void)viewWillAppear:(BOOL)animated {
+  NSLog(@"abla --- %@", @"MyViewController viewWillAppear");
   [super viewWillAppear:animated];
+}
+
+-(void)viewWillDisappear:(BOOL)animated {
+  NSLog(@"abla --- %@", @"MyViewController viewWillDisappear");
+  [super viewWillDisappear:animated];
 }
 
 @end
@@ -94,18 +97,10 @@ NSDictionary * const extensions = @{
 -(void)applicationDidFinishLaunching:(id)arg1 {
   %orig;
   NSLog(@"abla --- %@", @"applicationDidFinishLaunching");
-//  JSContext * jsContext = [%c(JSContext) new];
-//  [jsContext[@"console"]
-//    invokeMethod:@"log"
-//    withArguments:@[@"abla 123456"]];
-  WKWebView * wv = [%c(WKWebView) new];
-  wv = [wv initWithFrame:CGRectMake(0,0,0,0)];
-  NSLog(@"abla --- %@", wv);
-  WKNavigation * wn = [wv
-    loadHTMLString:@"<!DOCTYPE HTML><html><head></head><body><iframe id=\"test\"></body>></html>"
-    baseURL:[NSURL
-      URLWithString:@"safari-extension://ffwneifuwefnjweiofweghjoi/_generated_background_page.html"]];
-  NSLog(@"abla --- %@", wn);
+  JSContext * jsContext = [%c(JSContext) new];
+  jsContext[@"a"] = [%c(JSValue)];
+//  JSValue * arrBuff = [jsContext evaluateScript:@"Int32Array.from([0,1,2]).buffer"];
+//  NSLog(@"abla --- %@", [arrBuff toObject]);
 }
 
 %end
@@ -199,7 +194,7 @@ NSDictionary * const extensions = @{
 
 // faults
 -(id)dataTaskWithRequest:(NSURLRequest *)arg1 {
-  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
+//  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
 //NSLog(@"abla --- %@%@", @"-(id)dataTaskWithRequest:", arg1);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
@@ -344,24 +339,6 @@ NSDictionary * const extensions = @{
 //NSLog(@"abla --- %@ %@%@", self, @"-(id)initWithTask:", arg1);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", arg1);
-  return retval;
-}
-
-%end
-
-/* NSURLRequest */
-
-@interface SENSURLRequest : NSURLRequest
-@property (nonatomic) long requestID;
-@end
-
-%hook NSURLRequest
-
--(instancetype)init {
-  id retval = %orig;
-  [retval
-    setValue:@420
-    forKey:@"requestID"];
   return retval;
 }
 

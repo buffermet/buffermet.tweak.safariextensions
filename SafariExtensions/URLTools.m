@@ -3,6 +3,31 @@
 @implementation URLTools
 
 /**
+ * Returns a regexp selector that will match the specified anchor string.
+ * (wilcards are not allowed)
+ * (example input: @"#anyBytes...")
+ * (example output: [NSRegularExpression
+ *   regularExpressionWithPattern:@"#anyBytes\\.\\.\\."
+ *   options:NSRegularExpressionCaseInsensitive]
+ *   error:nil)]
+ */
++(NSRegularExpression *)anchorSpecifierToRegexpIgnoreCase:(NSString *)anchorSpecifier {
+  NSRegularExpression * regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"[.?[\\]{}()*\\\\|]"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  anchorSpecifier = [regexp
+    stringByReplacingMatchesInString:anchorSpecifier  
+    options:0
+    range:NSMakeRange(0, [anchorSpecifier length])
+    withTemplate:@"\\$1"];
+  return [NSRegularExpression
+    regularExpressionWithPattern:anchorSpecifier
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+}
+
+/**
  * Returns a regexp selector using the specified domain specifier string.
  * Domain specifiers can contain a wildcard to specify subdomains.
  * Use "<all_urls>" to specify all domains.
@@ -95,6 +120,23 @@
 }
 
 /**
+ * Returns an array of strings that were separated by ";" and stripped from trailing
+ * whitespaces.
+ * (example input: @"form-data; name=\"attachment\"; filename=\"/path/img.png\"")
+ * (example output: @[@"form-data", @"name=\"attachment\"", @"filename=\"/path/img.png\""])
+ */
++(NSArray *)getHeaderParts:(NSString *)headerValue {
+  NSMutableArray * arr = [NSMutableArray array];
+  NSArray * matches = [headerValue
+    componentsSeparatedByString:@";"];
+  for (NSString * match in matches) {
+    [arr addObject:[self
+      stripAllTrailingWhitespace:match]];
+  }
+  return arr;
+}
+
+/**
  * Returns a dictionary of headers that were found in a string
  * @{
  *   @"Content-Type": @["multipart/form-data; boundary=\"538948530\""],
@@ -132,48 +174,6 @@
 }
 
 /**
- * Returns an array of strings that were separated by ";" and stripped from trailing
- * whitespaces.
- * (example input: @"form-data; name=\"attachment\"; filename=\"/path/img.png\"")
- * (example output: @[@"form-data", @"name=\"attachment\"", @"filename=\"/path/img.png\""])
- */
-+(NSArray *)getHeaderParts:(NSString *)headerValue {
-  NSMutableArray * arr = [NSMutableArray array];
-  NSArray * matches = [headerValue
-    componentsSeparatedByString:@";"];
-  for (NSString * match in matches) {
-    [arr addObject:[self
-      stripAllTrailingWhitespace:match]];
-  }
-  return arr;
-}
-
-/**
- * Returns a regexp selector that will match the specified anchor string.
- * (wilcards are not allowed)
- * (example input: @"#anyBytes()")
- * (example output: [NSRegularExpression
- *   regularExpressionWithPattern:@"#anyBytes\\(\\)"
- *   options:NSRegularExpressionCaseInsensitive]
- *   error:nil)]
- */
-+(NSRegularExpression *)anchorSpecifierToRegexpIgnoreCase:(NSString *)anchorSpecifier {
-  NSRegularExpression * regexp = [NSRegularExpression
-    regularExpressionWithPattern:@"[?[\\]{}()*\\\\]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:anchorSpecifier  
-    options:0
-    range:NSMakeRange(0, [anchorSpecifier length])
-    withTemplate:@"\\$1"];
-  return [NSRegularExpression
-    regularExpressionWithPattern:anchorSpecifier
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-}
-
-/**
  * Returns a regexp selector that will match the specified path string.
  * (wilcards are allowed)
  * (example input: @"/api/something-*")
@@ -184,7 +184,7 @@
  */
 +(NSRegularExpression *)pathSpecifierToRegexpIgnoreCase:(NSString *)pathSpecifier {
   NSRegularExpression * regexp = [NSRegularExpression
-    regularExpressionWithPattern:@"[?[\\]{}()\\\\]"
+    regularExpressionWithPattern:@"[.?[\\]{}()\\\\|]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
   pathSpecifier = [regexp
@@ -208,65 +208,18 @@
 }
 
 /**
- * Returns a regexp selector that will match the specified query string.
- * (wilcards are allowed)
- * (example input: @"/api/
- * *")
+ * Returns a regexp selector using the specified port string.
+ * (example input: @":443")
  * (example output: [NSRegularExpression
- *   regularExpressionWithPattern:@"/api/something-.*"
+ *   regularExpressionWithPattern:@":443"
  *   options:NSRegularExpressionCaseInsensitive
- *   error:nil)]
+ *   error:nil])
  */
-+(NSRegularExpression *)querySpecifierToRegexpIgnoreCase:(NSString *)querySpecifier {
-  NSRegularExpression * regexp = [NSRegularExpression
-    regularExpressionWithPattern:@"[?[\\]{}()\\\\]"
++(NSRegularExpression *)portSpecifierToRegexpIgnoreCase:(NSString *)portSpecifier {
+  return [NSRegularExpression
+    regularExpressionWithPattern:portSpecifier
     options:NSRegularExpressionCaseInsensitive
     error:nil];
-  querySpecifier = [regexp
-    stringByReplacingMatchesInString:querySpecifier  
-    options:0
-    range:NSMakeRange(0, [querySpecifier length])
-    withTemplate:@"\\$1"];
-  regexp = [NSRegularExpression
-    regularExpressionWithPattern:@"[*]"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  querySpecifier = [regexp
-    stringByReplacingMatchesInString:querySpecifier  
-    options:0
-    range:NSMakeRange(0, [querySpecifier length])
-    withTemplate:@".*"];
-  return nil;
-}
-
-/**
- * Removes all whitespace at the start and end of a string.
- */
-+(NSString *)stripAllTrailingWhitespace:(NSString *)str {
-  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
-    regularExpressionWithPattern:@"^\\s*(.*)\\s*$"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  return [regexTrailingWhitespace
-    stringByReplacingMatchesInString:str
-    options:0
-    range:NSMakeRange(0, [str length])
-    withTemplate:@"$1"];
-}
-
-/**
- * Removes a double quote at the start and end of a string.
- */
-+(NSString *)stripTrailingDoubleQuote:(NSString *)str {
-  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
-    regularExpressionWithPattern:@"^[\"]*(.*)[\"]*$"
-    options:NSRegularExpressionCaseInsensitive
-    error:nil];
-  return [regexTrailingWhitespace
-    stringByReplacingMatchesInString:str
-    options:0
-    range:NSMakeRange(0, [str length])
-    withTemplate:@"$1"];
 }
 
 /**
@@ -294,6 +247,70 @@
 }
 
 /**
+ * Returns a regexp selector that will match the specified query string.
+ * (wilcards are allowed)
+ * (example input: @"?param=value&darkmode=1&data=AjujNW%3D%3D")
+ * (example output: [NSRegularExpression
+ *   regularExpressionWithPattern:@"\\?param=value&darkmode=1&data=AjujNW%3D%3D"
+ *   options:NSRegularExpressionCaseInsensitive
+ *   error:nil)]
+ */
++(NSRegularExpression *)querySpecifierToRegexpIgnoreCase:(NSString *)querySpecifier {
+  NSRegularExpression * regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"[.?[\\]{}()\\\\|]"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  querySpecifier = [regexp
+    stringByReplacingMatchesInString:querySpecifier  
+    options:0
+    range:NSMakeRange(0, [querySpecifier length])
+    withTemplate:@"\\$1"];
+  regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"[*]"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  querySpecifier = [regexp
+    stringByReplacingMatchesInString:querySpecifier  
+    options:0
+    range:NSMakeRange(0, [querySpecifier length])
+    withTemplate:@".*"];
+  return [NSRegularExpression
+    regularExpressionWithPattern:querySpecifier
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+}
+
+/**
+ * Removes all whitespace at the start and end of a string.
+ */
++(NSString *)stripAllTrailingWhitespace:(NSString *)str {
+  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
+    regularExpressionWithPattern:@"^\\s*(.*)\\s*$"
+    options:0
+    error:nil];
+  return [regexTrailingWhitespace
+    stringByReplacingMatchesInString:str
+    options:0
+    range:NSMakeRange(0, [str length])
+    withTemplate:@"$1"];
+}
+
+/**
+ * Removes a double quote at the start and end of a string.
+ */
++(NSString *)stripTrailingDoubleQuote:(NSString *)str {
+  const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
+    regularExpressionWithPattern:@"^[\"]?(.*)[\"]?$"
+    options:0
+    error:nil];
+  return [regexTrailingWhitespace
+    stringByReplacingMatchesInString:str
+    options:0
+    range:NSMakeRange(0, [str length])
+    withTemplate:@"$1"];
+}
+
+/**
  * Upgrades the specified NSURL's protocol (http: and ws:).'
  * (example input: [NSURL URLWithString:@"http://www.example.org/"])
  * (example output: [NSURL URLWithString:@"https://www.example.org/"])
@@ -315,17 +332,28 @@
 }
 
 /**
- * Returns an array of regexp specifiers using the specified URL specifier string.
+ * Returns an array of case insensitive regexp specifiers using the specified URL
+ * specifier string.
  * Wildcards are not allowed in the URL query and anchor.
- * (example input: @"*://\*.example.org/path/\*?param=A9fjjo%3D%3D#anchor")
- * (example output: [NSRegularExpression
- *   regularExpressionWithPattern:@"[a-z-]+://(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?.)+google\\.org/path/.*\\?param=A9fjjo%3D%3D#anchor"
- *   options:NSRegularExpressionCaseInsensitive
- *   error:nil])
+ * (example input: @"*://
+ * *.example.org/path/
+ * *?param=A9fjjo%3D%3D#anchor")
+ * (example output: @[
+ *   <NSRegularExpression *>, 
+ *   <NSRegularExpression *>, 
+ *   <NSRegularExpression *>, 
+ *   <NSRegularExpression *>, 
+ *   <NSRegularExpression *>, 
+ *   <NSRegularExpression *>
+ * ])
  */
 +(NSArray *)URLSpecifierToRegexpIgnoreCaseSet:(NSString *)urlSpecifier {
   NSRegularExpression * regexp = [NSRegularExpression
-    regularExpressionWithPattern:@"((?:[a-z-]+|[*]):)//((?:\\*\\.[a-z]{1,63}|(?:(?:\\*\\.|)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+(?:[a-z]{1,63})))(/[^?#]*)([?][^#]+)?([#].*)?"
+    regularExpressionWithPattern:@".*://"
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
+  regexp = [NSRegularExpression
+    regularExpressionWithPattern:@"((?:[a-z-]+|[*]):)//((?:\\*\\.[a-z]{1,63}|(?:(?:\\*\\.|)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+(?:[a-z]{1,63})))(:[0-9]{1,5}])?(/[^?#]*)([?][^#]+)?([#].*)?"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
   NSString * protocolSpecifier = [regexp
@@ -338,24 +366,30 @@
     options:0
     range:NSMakeRange(0, [urlSpecifier length]) 
     withTemplate:@"$2"];
-  NSString * pathSpecifier = [regexp
+  NSString * portSpecifier = [regexp
     stringByReplacingMatchesInString:urlSpecifier
     options:0
     range:NSMakeRange(0, [urlSpecifier length]) 
     withTemplate:@"$3"];
-  NSString * querySpecifier = [regexp
+  NSString * pathSpecifier = [regexp
     stringByReplacingMatchesInString:urlSpecifier
     options:0
     range:NSMakeRange(0, [urlSpecifier length]) 
     withTemplate:@"$4"];
-  NSString * anchorSpecifier = [regexp
+  NSString * querySpecifier = [regexp
     stringByReplacingMatchesInString:urlSpecifier
     options:0
     range:NSMakeRange(0, [urlSpecifier length]) 
     withTemplate:@"$5"];
+  NSString * anchorSpecifier = [regexp
+    stringByReplacingMatchesInString:urlSpecifier
+    options:0
+    range:NSMakeRange(0, [urlSpecifier length]) 
+    withTemplate:@"$6"];
   return @[
     [self protocolSpecifierToRegexpIgnoreCase:protocolSpecifier],
     [self domainSpecifierToRegexpIgnoreCase:domainSpecifier],
+    [self pathSpecifierToRegexpIgnoreCase:portSpecifier],
     [self pathSpecifierToRegexpIgnoreCase:pathSpecifier],
     [self querySpecifierToRegexpIgnoreCase:querySpecifier],
     [self anchorSpecifierToRegexpIgnoreCase:anchorSpecifier]

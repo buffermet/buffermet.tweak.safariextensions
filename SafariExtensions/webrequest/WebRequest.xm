@@ -120,6 +120,66 @@ NSArray * int32ArrayFromData(NSData * data) {
   return arr;
 }
 
+NSData * dataFromUint8Array(NSArray *)arr {
+  unsigned length = [arr count];
+  uint8_t * bytes = malloc(sizeof(* bytes) * length);
+  unsigned i;
+  for (i = 0; i < length; i++) {
+    NSNumber * num = [arr objectAtIndex:i];
+    int byte = [num unsignedCharValue];
+    bytes[i] = byte;
+  }
+  return [NSData
+    dataWithBytesNoCopy:bytes
+    length:length
+    freeWhenDone:YES];
+}
+
+NSData * dataFromInt8Array(NSArray *)arr {
+  unsigned length = [arr count];
+  int8_t * bytes = malloc(sizeof(* bytes) * length);
+  unsigned i;
+  for (i = 0; i < length; i++) {
+    NSNumber * num = [arr objectAtIndex:i];
+    int byte = [num charValue];
+    bytes[i] = byte;
+  }
+  return [NSData
+    dataWithBytesNoCopy:bytes
+    length:length
+    freeWhenDone:YES];
+}
+
+NSData * dataFromInt16Array(NSArray *)arr {
+  unsigned length = [arr count];
+  int16_t * bytes = malloc(sizeof(* bytes) * length);
+  unsigned i;
+  for (i = 0; i < length; i++) {
+    NSNumber * num = [arr objectAtIndex:i];
+    int byte = [num intValue];
+    bytes[i] = byte;
+  }
+  return [NSData
+    dataWithBytesNoCopy:bytes
+    length:length
+    freeWhenDone:YES];
+}
+
+NSData * dataFromInt32Array(NSArray *)arr {
+  unsigned length = [arr count];
+  int32_t * bytes = malloc(sizeof(* bytes) * length);
+  unsigned i;
+  for (i = 0; i < length; i++) {
+    NSNumber * num = [arr objectAtIndex:i];
+    int byte = [num longValue];
+    bytes[i] = byte;
+  }
+  return [NSData
+    dataWithBytesNoCopy:bytes
+    length:length
+    freeWhenDone:YES];
+}
+
 NSArray * getBufferedStreamChunks(NSInputStream * inputStream, int size) {
   const int BUFFER_LENGTH = 8192;
   uint8_t buffer[size];
@@ -212,6 +272,64 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
 }
 
 -(NSMutableURLRequest *)detailsObjectToNSMutableURLRequest:(NSDictionary *)details {
+  NSMutableURLRequest * request;
+//  \"cookieStoreId\": null,
+//  \"documentURL\": null,
+  if (details[@"documentURL"]) {
+    NSURL * url = [NSURL URLWithString:details[@"documentURL"]];
+    request.mainDocumentURL = url;
+  }
+//  \"frameAncestors\": {
+//    \"url\": null,
+//    \"frameId\": null,
+//  },
+//  \"frameId\": null,
+//  \"incognito\": null,
+//  \"method\": null,
+//  \"originUrl\": null,
+//  \"parentFrameId\": null,
+//  \"proxyInfo\": {
+//    \"host\": null,
+//    \"port\": null,
+//    \"type\": null,
+//    \"username\": null,
+//    \"proxyDNS\": null,
+//    \"failoverTimeout\": null
+//  },
+//  \"requestBody\": {
+//    \"error\": null,
+//    \"formData\": null,
+//    \"raw\": null
+  if (details[@"requestBody"]) {
+    JSValue * requestBody = details[@"requestBody"];
+    if ([requestBody hasProperty:@"error"]) {
+      // print the error in console
+    }
+    if ([requestBody hasProperty:@"formData"]) {
+      JSValue * 
+      
+    }
+    if ([requestBody hasProperty:@"raw"]) {
+//      JSValue * arrayBuffer = [requestBody
+//        valueForProperty:@"raw"];
+//      NSArray * Uint8Array = [jsContext ]
+    }  
+  }
+//  },
+//  \"requestId\": null,
+//  \"tabId\": null,
+//  \"thirdParty\": null,
+//  \"timeStamp\": null,
+//  \"type\": null,
+//  \"url\": null,
+  if (details[@"url"]) {
+    NSURL * url = [NSURL URLWithString:details[@"url"]];
+    request.URL = url;
+  }
+//  \"urlClassification\": {
+//    \"firstParty\": null,
+//    \"thirdParty\": null
+//  }
   return nil;
 }
 
@@ -375,9 +493,7 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
        [method isEqual:@"PUT"]
     || [method isEqual:@"POST"]
   ) {
-    // new Array().concat({bytes: new ArrayBuffer(payload)});
     // {raw: ArrayBuffer(...)}
-    // Uint8Array.from([0,0,0]).buffer
     detailsRequestBodyRaw = [%c(JSValue)
       valueWithNewArrayInContext:jsContext];
     NSArray * bufferedChunks = getBufferedStreamChunks(

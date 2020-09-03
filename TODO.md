@@ -1,4 +1,4 @@
-An entry in this list is checked (✅) once it has been demonstrated to handle the same input and produce the same output as the WebExtensions API as described in <a href="https://searchfox.org/mozilla-central/source">Mozilla's</a> and/or <a href="https://chromium.googlesource.com/chromium">Chromium's</a> documentation.
+An entry in this list is checked (✅) once it has been demonstrated to handle input and produce output the same way (or better) as the WebExtensions API as described in <a href="https://searchfox.org/mozilla-central/source">Mozilla's</a> and/or <a href="https://chromium.googlesource.com/chromium">Chromium's</a> documentation.
 
 JavaScript APIs:
 
@@ -62,10 +62,7 @@ JavaScript APIs:
       - [ ] NSURLConnectionDataDelegate
       - [ ] ...
     - [ ] Implement caching compatibility.
-    - [ ] Implement missing JavaScriptCore objects.
-      - [ ] XMLHttpRequest
-      - [ ] XMLHttpRequestEventTarget
-      - [ ] XMLHttpRequestUpload
-      - [ ] console (logging options for extension consoles)
+    - [ ] Extract the JSContext from UIWebView.
+    - [ ] Port console output to an extension specific interface.
 - [ ] windows
 
