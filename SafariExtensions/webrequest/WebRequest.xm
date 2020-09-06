@@ -120,6 +120,9 @@ NSArray * int32ArrayFromData(NSData * data) {
   return arr;
 }
 
+/**
+ * Returns a pointer to an NSData instance using a given array of 8-bit unsigned integers.
+ */
 NSData * dataFromUint8Array(NSArray *)arr {
   unsigned length = [arr count];
   uint8_t * bytes = malloc(sizeof(* bytes) * length);
@@ -135,6 +138,9 @@ NSData * dataFromUint8Array(NSArray *)arr {
     freeWhenDone:YES];
 }
 
+/**
+ * Returns a pointer to an NSData instance using a given array of 8-bit integers.
+ */
 NSData * dataFromInt8Array(NSArray *)arr {
   unsigned length = [arr count];
   int8_t * bytes = malloc(sizeof(* bytes) * length);
@@ -150,6 +156,9 @@ NSData * dataFromInt8Array(NSArray *)arr {
     freeWhenDone:YES];
 }
 
+/**
+ * Returns a pointer to an NSData instance using a given array of 16-bit integers.
+ */
 NSData * dataFromInt16Array(NSArray *)arr {
   unsigned length = [arr count];
   int16_t * bytes = malloc(sizeof(* bytes) * length);
@@ -165,6 +174,9 @@ NSData * dataFromInt16Array(NSArray *)arr {
     freeWhenDone:YES];
 }
 
+/**
+ * Returns a pointer to an NSData instance using a given array of 32-bit integers.
+ */
 NSData * dataFromInt32Array(NSArray *)arr {
   unsigned length = [arr count];
   int32_t * bytes = malloc(sizeof(* bytes) * length);
@@ -180,6 +192,10 @@ NSData * dataFromInt32Array(NSArray *)arr {
     freeWhenDone:YES];
 }
 
+/**
+ * Returns an array of strings that contain no more than 8192 unsigned chars using
+ * a given input stream and size.
+ */
 NSArray * getBufferedStreamChunks(NSInputStream * inputStream, int size) {
   const int BUFFER_LENGTH = 8192;
   uint8_t buffer[size];
@@ -200,6 +216,10 @@ NSArray * getBufferedStreamChunks(NSInputStream * inputStream, int size) {
   return arr;
 }
 
+/**
+ * Returns an array of strings that were split at a given bounday and contain
+ * no more than 8192 unsigned chars using a given input stream and size.
+ */
 NSArray * getBufferedStreamChunksAndSplit(
   NSInputStream * inputStream,
   int size,

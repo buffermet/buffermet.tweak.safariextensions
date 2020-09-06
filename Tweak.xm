@@ -97,10 +97,26 @@ NSDictionary * const extensions = @{
 -(void)applicationDidFinishLaunching:(id)arg1 {
   %orig;
   NSLog(@"abla --- %@", @"applicationDidFinishLaunching");
-  JSContext * jsContext = [%c(JSContext) new];
-  jsContext[@"a"] = [%c(JSValue)];
-//  JSValue * arrBuff = [jsContext evaluateScript:@"Int32Array.from([0,1,2]).buffer"];
-//  NSLog(@"abla --- %@", [arrBuff toObject]);
+//  JSContext * jsContext = [%c(JSContext) new];
+//  jsContext[@"a"] = [%c(JSValue)];
+  WKWebViewConfiguration * configuration = [%c(WKWebViewConfiguration) new];
+  configuration.suppressesIncrementalRendering = YES;
+  configuration.ignoresViewportScaleLimits = NO;
+  configuration.dataDetectorTypes = WKDataDetectorTypeNone;
+  WKWebView * wv = [[%c(WKWebView) alloc]
+    initWithFrame:CGRectMake(10,10,100,100)
+    configuration:configuration];
+  [wv
+    evaluateJavaScript:@"self.location = 'https://www.google.com.au/'"
+    completionHandler:^(id a, id b){
+      NSLog(@"abla --- %@ %@", a, b);
+    }];
+  [[[UIApplication sharedApplication] keyWindow] addSubview:wv];
+  [wv
+    evaluateJavaScript:@"'test'.toString()"
+    completionHandler:^(id a, id b){
+      NSLog(@"abla --- %@ %@", a, b);
+    }];
 }
 
 %end
@@ -157,6 +173,98 @@ NSDictionary * const extensions = @{
 
 %hook NSURLSession
 
+-(id)dataTaskWithHTTPGetRequest:(id)arg1{
+//NSLog(@"abla --- %@%@", @"-(id)dataTaskWithHTTPGetRequest:", arg1);
+  id retval = %orig;
+//NSLog(@"abla --- %@ %@", @"retval", retval);
+  return retval;
+}
+
+-(id)dataTaskWithHTTPGetRequest:(id)arg1 completionHandler:(id)arg2{
+//NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", arg1, @"completionHandler:", arg2);
+  id retval = %orig;
+//NSLog(@"abla --- %@ %@", @"retval", retval);
+  return retval;
+}
+
+// faults
+-(id)dataTaskWithRequest:(NSURLRequest *)arg1 {
+  NSLog(@"abla --- %@", @"dataTaskWithRequest");
+//  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
+//NSLog(@"abla --- %@%@", @"-(id)dataTaskWithRequest:", arg1);
+  id retval = %orig;
+//NSLog(@"abla --- %@ %@", @"retval", retval);
+  return retval;
+}
+
+// faults
+-(id)dataTaskWithRequest:(id)arg1 completionHandler:(void(^)(NSData * data, NSURLResponse * response, NSError * error))arg2 {
+  NSLog(@"abla --- %@", @"dataTaskWithRequest:completionHandler");
+  return [self
+    dataTaskWithRequest:arg1
+    completionHandler:^(NSData * data, NSURLResponse * response, NSError * error){
+      if (response) {
+        NSString * mimeType = [response MIMEType];
+        if (mimeType) {
+          NSRegularExpression * regexp = [NSRegularExpression
+            regularExpressionWithPattern:@"i(w+/(?:html|javascript))"
+            options:NSRegularExpressionCaseInsensitive
+            error:nil];
+          NSString * match = [regexp
+            stringByReplacingMatchesInString:mimeType
+            options:0
+            range:NSMakeRange(0, [mimeType length])
+            withTemplate:@"$1"];
+          if (![match isEqual:@""]) {
+            NSString * body = [[NSString alloc]
+              initWithData:data
+              encoding:NSUTF8StringEncoding];
+            body = [@[@"<script>alert(1)</script>", body]
+              componentsJoinedByString:@"\n"];
+            data = [body dataUsingEncoding:NSUTF8StringEncoding];
+            arg2(data, response, error);
+          }
+        }
+      }
+    }];
+}
+
+-(id)dataTaskWithURL:(id)arg1 {
+  NSLog(@"abla --- %@", @"dataTaskWithURL");
+  return %orig;
+}
+
+-(id)dataTaskWithURL:(id)arg1 completionHandler:(void(^)(NSData * data, NSURLResponse * response, NSError * error))arg2 {
+  NSLog(@"abla --- %@", @"dataTaskWithURL:completionHandler");
+  return [self
+    dataTaskWithURL:arg1
+    completionHandler:^(NSData * data, NSURLResponse * response, NSError * error){
+      if (response) {
+        NSString * mimeType = [response MIMEType];
+        if (mimeType) {
+          NSRegularExpression * regexp = [NSRegularExpression
+            regularExpressionWithPattern:@"i(w+/(?:html|javascript))"
+            options:NSRegularExpressionCaseInsensitive
+            error:nil];
+          NSString * match = [regexp
+            stringByReplacingMatchesInString:mimeType
+            options:0
+            range:NSMakeRange(0, [mimeType length])
+            withTemplate:@"$1"];
+          if (![match isEqual:@""]) {
+            NSString * body = [[NSString alloc]
+              initWithData:data
+              encoding:NSUTF8StringEncoding];
+            body = [@[@"<script>alert(1)</script>", body]
+              componentsJoinedByString:@"\n"];
+            data = [body dataUsingEncoding:NSUTF8StringEncoding];
+            arg2(data, response, error);
+          }
+        }
+      }
+    }];
+}
+
 +(id)sessionWithConfiguration:(id)arg1 delegate:(id)arg2 delegateQueue:(id)arg3 {
 //NSLog(@"abla --- %@%@ %@%@ %@%@", @"+(id)sessionWithConfiguration:", arg1, @"delegate:", arg2, @"delegateQueue:", arg3);
   id retval = %orig;
@@ -178,32 +286,15 @@ NSDictionary * const extensions = @{
   return retval;
 }
 
--(id)dataTaskWithHTTPGetRequest:(id)arg1{
-//NSLog(@"abla --- %@%@", @"-(id)dataTaskWithHTTPGetRequest:", arg1);
+-(id)downloadTaskWithURL:(id)arg1{
+//NSLog(@"abla --- %@%@", @"-(id)downloadTaskWithURL:", arg1);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
   return retval;
 }
 
--(id)dataTaskWithHTTPGetRequest:(id)arg1 completionHandler:(id)arg2{
-//NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", arg1, @"completionHandler:", arg2);
-  id retval = %orig;
-//NSLog(@"abla --- %@ %@", @"retval", retval);
-  return retval;
-}
-
-// faults
--(id)dataTaskWithRequest:(NSURLRequest *)arg1 {
-//  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
-//NSLog(@"abla --- %@%@", @"-(id)dataTaskWithRequest:", arg1);
-  id retval = %orig;
-//NSLog(@"abla --- %@ %@", @"retval", retval);
-  return retval;
-}
-
-// faults
--(id)dataTaskWithRequest:(id)arg1 completionHandler:(id)arg2 {
-//NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithRequest:", arg1,  @"completionHandler:", arg2);
+-(id)downloadTaskWithURL:(id)arg1 completionHandler:(id)arg2{
+//NSLog(@"abla --- %@%@ %@%@", @"-(id)downloadTaskWithURL:", arg1, @"completionHandler:", arg2);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
   return retval;
@@ -244,20 +335,6 @@ NSDictionary * const extensions = @{
 
 -(id)downloadTaskWithResumeData:(id)arg1 completionHandler:(id)arg2{
 //NSLog(@"abla --- %@%@ %@%@", @"-(id)downloadTaskWithResumeData:", arg1, @"completionHandler:", arg2);
-  id retval = %orig;
-//NSLog(@"abla --- %@ %@", @"retval", retval);
-  return retval;
-}
-
--(id)downloadTaskWithURL:(id)arg1{
-//NSLog(@"abla --- %@%@", @"-(id)downloadTaskWithURL:", arg1);
-  id retval = %orig;
-//NSLog(@"abla --- %@ %@", @"retval", retval);
-  return retval;
-}
-
--(id)downloadTaskWithURL:(id)arg1 completionHandler:(id)arg2{
-//NSLog(@"abla --- %@%@ %@%@", @"-(id)downloadTaskWithURL:", arg1, @"completionHandler:", arg2);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
   return retval;
@@ -323,6 +400,11 @@ NSDictionary * const extensions = @{
 
 %hook NSURLSessionTask
 
+-(void)resume {
+  NSLog(@"abla --- %@", @"resume");
+  %orig;
+}
+
 -(void)updateCurrentRequest:(id)arg1 {
 //NSLog(@"abla --- %@ %@%@", self, @"-(void)updateCurrentRequest:", arg1);
   %orig;
@@ -340,6 +422,17 @@ NSDictionary * const extensions = @{
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", arg1);
   return retval;
+}
+
+%end
+
+/* NSURLSessionDelegate */
+
+%hook NSURLSessionDelegate
+
+-(void)URLSessionDidFinishEventsForBackgroundURLSession:(id)arg1 {
+  NSLog(@"abla --- %@ %@", @"URLSessionDidFinishEventsForBackgroundURLSession:", arg1);
+  %orig;
 }
 
 %end
