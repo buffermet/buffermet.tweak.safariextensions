@@ -1,9 +1,9 @@
-@interface SEBackgroundPage : NSObject
+@interface BackgroundPage : NSObject
 @end
 
-@interface SEBackgroundWorker : NSObject
+@interface BackgroundWorker : NSObject
 @end
 
-@interface SEHiddenExtensionPage : NSObject
+@interface HiddenExtensionPage : NSObject
 @end
 

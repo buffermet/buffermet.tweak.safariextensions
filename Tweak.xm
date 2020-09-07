@@ -1,5 +1,5 @@
 #import <WebKit/WebKit.h>
-#import "SafariExtensions/URLTools.h"
+#import "SafariExtensions/URLTools/URLTools.h"
 #import "SafariExtensions/SEContentScripts.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 
@@ -191,7 +191,6 @@ NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @
 // faults
 -(id)dataTaskWithRequest:(NSURLRequest *)arg1 {
 //  NSLog(@"abla --- %@", @"dataTaskWithRequest");
-//  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
 //NSLog(@"abla --- %@%@", @"-(id)dataTaskWithRequest:", arg1);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
@@ -402,6 +401,8 @@ NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @
 %hook NSURLSessionTask
 
 -(void)resume {
+  const NSURLRequest * const req = [self currentRequest];
+  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(req, "_internal") hash]);
   NSLog(@"abla --- %@", @"resume");
   %orig;
 }
@@ -411,23 +412,12 @@ NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @
   %orig;
 }
 
--(id)initWithOriginalRequest:(id)arg1 updatedRequest:(id)arg2 ident:(unsigned long long)arg3 session:(id)arg4 {
-//NSLog(@"abla --- %@ %@%@ %@%@ %@%llu %@%@", self, @"-(id)initWithOriginalRequest:", arg1, @"updateRequest:", arg2, @"ident", arg3, @"session:", arg4);
-  id retval = %orig;
-//NSLog(@"abla --- %@ %@", @"retval", arg1);
-  return retval;
-}
-
--(id)initWithTask:(id)arg1 {
-//NSLog(@"abla --- %@ %@%@", self, @"-(id)initWithTask:", arg1);
-  id retval = %orig;
-//NSLog(@"abla --- %@ %@", @"retval", arg1);
-  return retval;
-}
-
 %end
 
 /* __NSCFURLSessionTask */
+
+long long lastRequestID = 0;
+const NSMutableDictionary * requestIDs;
 
 @interface __NSCFURLSessionTask : NSObject
 -(id)currentRequest;
@@ -452,13 +442,18 @@ NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @
 */
 
 -(void)resume {
+  const NSURLRequest * const req = [self currentRequest];
+  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(req, "_internal") hash]);
   NSLog(@"abla --- __NSCFURLSessionTask %@", @"resume");
+//  NSLog(@"abla --- %@", [[NSString alloc]
+//    initWithData:[req HTTPBody]
+//    encoding:NSUTF8StringEncoding]);
   %orig;
 }
 
 -(void)setResponse:(id)arg1 {
   // fire data event here?
-  NSLog(@"abla --- %@%@", @"setResponse:", @"redacted");
+  NSLog(@"abla --- %@%@ %@%lld", @"setResponse:", @"redacted", @"status:", (long long) [arg1 statusCode]);
   %orig;
 }
 

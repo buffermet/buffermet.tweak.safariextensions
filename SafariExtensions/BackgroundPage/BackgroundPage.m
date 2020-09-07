@@ -1,6 +1,6 @@
-#import "SEBackgroundPage.h"
+#import "BackgroundPage.h"
 
-@implementation SEBackgroundPage
+@implementation BackgroundPage
 
 
 

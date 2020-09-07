@@ -1,5 +1,4 @@
 #import "SEContentScripts.h"
-#import "URLTools.h"
 
 @implementation SEContentScripts
 

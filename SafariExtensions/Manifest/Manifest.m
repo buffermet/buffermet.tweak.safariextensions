@@ -1,3 +1,5 @@
+#import "Manifest.h"
+
 /*
 // example of a manifest.json
 {
@@ -37,9 +39,7 @@
 }
 */
 
-#import "SEManifest.h"
-
-@implementation SEManifest
+@implementation Manifest
 
 +(NSDictionary *)parseManifest:(NSString *)encodedJSON {
   NSMutableDictionary * const dict = [NSMutableDictionary new];

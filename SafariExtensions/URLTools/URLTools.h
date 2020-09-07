@@ -8,9 +8,9 @@
 +(NSRegularExpression *)portSpecifierToRegexpIgnoreCase:(NSString *)portSpecifier;
 +(NSRegularExpression *)protocolSpecifierToRegexpIgnoreCase:(NSString *)protocolSpecifier;
 +(NSRegularExpression *)querySpecifierToRegexpIgnoreCase:(NSString *)querySpecifier;
-+(NSString *)stripAllTrailingWhitespace:(NSString *)str;
-+(NSString *)stripTrailingDoubleQuote:(NSString *)str;
-//+(NSString *)stripTrailingWhitespace:(NSString *)str;
++(NSString *)stripAllTrailingWhitespaces:(NSString *)str;
++(NSString *)stripTrailingDoubleQuotes:(NSString *)str;
+//+(NSString *)stripTrailingWhitespaces:(NSString *)str;
 +(NSURL *)upgradeNSURLProtocol:(NSURL *)URL;
 +(NSArray *)URLSpecifierToRegexpIgnoreCaseSet:(NSString *)urlSpecifier;
 @end

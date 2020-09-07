@@ -2,37 +2,41 @@
 
 @implementation StreamFilter
 
-+(instancetype)initWithParentID:() requestID:(uint64_t *)requestID addonID:(NSString *)addonID {}
+-(BOOL)checkAlive {
+  return true;
+}
 
--(BOOL)checkAlive {}
-
--(void)close:(NSError * error) {}
+-(void)close:(NSError *)error {}
 
 -(void)connect {}
 
--(void)disconnect:(NSError * error) {}
+-(void)disconnect:(NSError *)error {}
 
 -(void)finishConnect {}
 
--(void)fireDataEvent:(uint8_t * data) {}
+-(void)fireDataEvent:(NSData *)data {}
 
--(void)fireErrorEvent:(NSString * error) {}
+-(void)fireErrorEvent:(NSString *)error {}
 
--(void)fireEvent:(NSString * type) {}
+-(void)fireEvent:(NSString *)type {}
 
 -(void)forgetActor {}
 
--(BOOL)isAllowedInContext:(JSContext *)context {}
+-(BOOL)isAllowedInContext:(JSContext *)context {
+  return true;
+}
 
--(BOOL)readTypedArrayData(uint8_t & data, NSArray * array, NSError * error) {}
+-(BOOL)readTypedArrayData:(NSData *)data array:(NSArray *)array error:(NSError *)error {
+  return true;
+}
 
--(void)resume:(NSError * error) {}
+-(void)resume:(NSError *)error {}
 
--(StreamFilterStatus *)status {}
+//-(StreamFilterStatus *)status {}
 
--(void)suspend:(NSError * error) {}
+-(void)suspend:(NSError *)error {}
 
--(void)write:(uint8_t * data, NSError * error) {}
+-(void)write:(NSData *)data error:(NSError *)error {}
 
 @end
 

@@ -7,8 +7,8 @@ const int StreamFilterParentStateDisconnecting = 5;
 const int StreamFilterParentStateDisconnected = 6;
 
 @interface StreamFilterParent : NSObject {
-  
 }
--()create;
--()attach:()channel parentEndPoint:(ParentEndPoint *)endPoint;
+//-()create;
+//-()attach:()channel parentEndPoint:(ParentEndPoint *)endPoint;
 @end
+

@@ -1,4 +1,4 @@
-@interface SEManifest : NSObject
+@interface Manifest : NSObject
 +(NSDictionary *)parseManifest:(NSString *)encodedJSON;
 @end
 

@@ -131,7 +131,7 @@
     componentsSeparatedByString:@";"];
   for (NSString * match in matches) {
     [arr addObject:[self
-      stripAllTrailingWhitespace:match]];
+      stripAllTrailingWhitespaces:match]];
   }
   return arr;
 }
@@ -283,7 +283,7 @@
 /**
  * Removes all whitespace at the start and end of a string.
  */
-+(NSString *)stripAllTrailingWhitespace:(NSString *)str {
++(NSString *)stripAllTrailingWhitespaces:(NSString *)str {
   const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
     regularExpressionWithPattern:@"^\\s*(.*)\\s*$"
     options:0
@@ -298,7 +298,7 @@
 /**
  * Removes a double quote at the start and end of a string.
  */
-+(NSString *)stripTrailingDoubleQuote:(NSString *)str {
++(NSString *)stripTrailingDoubleQuotes:(NSString *)str {
   const NSRegularExpression * const regexTrailingWhitespace = [NSRegularExpression
     regularExpressionWithPattern:@"^[\"]?(.*)[\"]?$"
     options:0

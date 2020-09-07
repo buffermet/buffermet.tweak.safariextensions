@@ -8,7 +8,9 @@
 
 -(void)disconnect:(NSError *)error {}
 
--(NSString *)getState {}
+-(NSInteger *)getState {
+  return 0;
+}
 
 -(void)recvInitialized:(BOOL)success {
   if (success) {
@@ -22,21 +24,13 @@
   }
 }
 
--()recvStartRequest {}
-
--()recvStopRequest:(int)status {}
-
 -(void)resume:(NSError *)error {}
 
 -(void)suspend:(NSError *)error {}
 
--(void)suspend:(NSError *)error {}
-
--(void)suspend:(NSError *)error {}
-
--(NSString *)status {}
-
--(void)suspend:(NSError *)error {}
+-(NSString *)status {
+  return @"";
+}
 
 -(void)write:(NSData *)data error:(NSError *)error {
   switch (state) {

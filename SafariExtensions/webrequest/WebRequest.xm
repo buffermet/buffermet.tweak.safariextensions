@@ -3,10 +3,7 @@
 // https://searchfox.org/mozilla-central/rev/3345af4b5/toolkit/modules/addons/WebRequestUpload.jsm#258-269
 
 #import <WebKit/WebKit.h>
-#import "SEWebRequest.h"
-#import "URLTools.h"
-//#import "SEJSContext.h"
-#import <JavaScriptCore/JavaScriptCore.h>
+#import "WebRequest.h"
 
 @interface NSURLRequestInternal
 -(unsigned long long)hash;
@@ -42,43 +39,6 @@ browser.webRequest.onBeforeRequest.addListener(
 
 pref("webextensions.webRequest.requestBodyMaxRawBytes", 16777216);
 */
-
-//const NSString * const rawRequestDetailsObject = @"{\
-//  \"cookieStoreId\": null,\
-//  \"documentURL\": null,\
-//  \"frameAncestors\": {\
-//    \"url\": null,\
-//    \"frameId\": null,\
-//  },\
-//  \"frameId\": null,\
-//  \"incognito\": null,\
-//  \"method\": null,\
-//  \"originUrl\": null,\
-//  \"parentFrameId\": null,\
-//  \"proxyInfo\": {\
-//    \"host\": null,\
-//    \"port\": null,\
-//    \"type\": null,\
-//    \"username\": null,\
-//    \"proxyDNS\": null,\
-//    \"failoverTimeout\": null\
-//  },\
-//  \"requestBody\": {\
-//    \"error\": null,\
-//    \"formData\": null,\
-//    \"raw\": null\
-//  },\
-//  \"requestId\": null,\
-//  \"tabId\": null,\
-//  \"thirdParty\": null,\
-//  \"timeStamp\": null,\
-//  \"type\": null,\
-//  \"url\": null,\
-//  \"urlClassification\": {\
-//    \"firstParty\": null,\
-//    \"thirdParty\": null\
-//  }\
-//}";
 
 NSArray * Uint8ArrayFromData(NSData * data) {
   const void * bytes = [data bytes];
@@ -123,14 +83,14 @@ NSArray * int32ArrayFromData(NSData * data) {
 /**
  * Returns a pointer to an NSData instance using a given array of 8-bit unsigned integers.
  */
-NSData * dataFromUint8Array(NSArray *)arr {
+NSData * NSDataFromUint8Array(NSArray * arr) {
   unsigned length = [arr count];
-  uint8_t * bytes = malloc(sizeof(* bytes) * length);
+  UInt8 * bytes[length];
   unsigned i;
   for (i = 0; i < length; i++) {
     NSNumber * num = [arr objectAtIndex:i];
-    int byte = [num unsignedCharValue];
-    bytes[i] = byte;
+    unsigned char byte = [num unsignedCharValue];
+    bytes[i] = &byte;
   }
   return [NSData
     dataWithBytesNoCopy:bytes
@@ -141,14 +101,14 @@ NSData * dataFromUint8Array(NSArray *)arr {
 /**
  * Returns a pointer to an NSData instance using a given array of 8-bit integers.
  */
-NSData * dataFromInt8Array(NSArray *)arr {
+NSData * NSDataFromInt8Array(NSArray * arr) {
   unsigned length = [arr count];
-  int8_t * bytes = malloc(sizeof(* bytes) * length);
+  uint8_t * bytes[length];
   unsigned i;
   for (i = 0; i < length; i++) {
     NSNumber * num = [arr objectAtIndex:i];
-    int byte = [num charValue];
-    bytes[i] = byte;
+    uint8_t byte = [num charValue];
+    bytes[i] = &byte;
   }
   return [NSData
     dataWithBytesNoCopy:bytes
@@ -159,14 +119,14 @@ NSData * dataFromInt8Array(NSArray *)arr {
 /**
  * Returns a pointer to an NSData instance using a given array of 16-bit integers.
  */
-NSData * dataFromInt16Array(NSArray *)arr {
+NSData * NSDataFromInt16Array(NSArray * arr) {
   unsigned length = [arr count];
-  int16_t * bytes = malloc(sizeof(* bytes) * length);
+  int16_t * bytes[length];
   unsigned i;
   for (i = 0; i < length; i++) {
     NSNumber * num = [arr objectAtIndex:i];
-    int byte = [num intValue];
-    bytes[i] = byte;
+    int16_t byte = [num intValue];
+    bytes[i] = &byte;
   }
   return [NSData
     dataWithBytesNoCopy:bytes
@@ -177,14 +137,14 @@ NSData * dataFromInt16Array(NSArray *)arr {
 /**
  * Returns a pointer to an NSData instance using a given array of 32-bit integers.
  */
-NSData * dataFromInt32Array(NSArray *)arr {
+NSData * NSDataFromInt32Array(NSArray * arr) {
   unsigned length = [arr count];
-  int32_t * bytes = malloc(sizeof(* bytes) * length);
+  int32_t * bytes[length];
   unsigned i;
   for (i = 0; i < length; i++) {
     NSNumber * num = [arr objectAtIndex:i];
     int byte = [num longValue];
-    bytes[i] = byte;
+    bytes[i] = &byte;
   }
   return [NSData
     dataWithBytesNoCopy:bytes
@@ -263,7 +223,7 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
   return getBufferedStreamChunksAndSplit(inputStream, size, boundary);
 }
 
-@implementation SEWebRequest
+@implementation WebRequest
 
 -(void)addListener:(id)listenerObj {
   if (![listenerObj
@@ -281,8 +241,48 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
   // add listener if not already existing
 }
 
--(NSDictionary *)newListenerDetailsObject {
-//  NSData * data = [rawRequestDetailsObject
+-(NSMutableDictionary *)newOnBeforeRequestListenerDetailsObject {
+//  const NSDictionary * const dict = ;
+  return [@{
+    @"cookieStoreId": @"",
+    @"documentURL": @"",
+    @"frameAncestors": @{
+      @"url": @"",
+      @"frameId": @(-1),
+    },
+    @"frameId": @(-1),
+    @"incognito": @NO,
+    @"method": @"",
+    @"originUrl": @"",
+    @"parentFrameId": @(-2),
+    @"proxyInfo": @{
+      @"host": @"",
+      @"port": @0,
+      @"type": @"",
+      @"username": @"",
+      @"proxyDNS": @YES,
+      @"failoverTimeout": @0
+    },
+    @"requestBody": @{
+      @"error": @"",
+      @"formData": @{},
+      @"raw": @[] 
+    },
+    @"requestId": @"",
+    @"tabId": @-2,
+    @"thirdParty": @NO,
+    @"timeStamp": @0,
+    @"type": @{},
+    @"url": @"",
+    @"urlClassification": @{
+      @"firstParty": @[],
+      @"thirdParty": @[]
+    }
+  } mutableCopy];
+}
+
+-(NSDictionary *)newOnResponseStartedListenerDetailsObject {
+//  NSData * data = [rawOnBeforeRequestListenerDetailsObject
 //    dataUsingEncoding:NSUTF8StringEncoding];
 //  return [NSJSONSerialization
 //    JSONObjectWithData:data
@@ -326,8 +326,8 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
       // print the error in console
     }
     if ([requestBody hasProperty:@"formData"]) {
-      JSValue * 
-      
+//      JSValue * 
+//      
     }
     if ([requestBody hasProperty:@"raw"]) {
 //      JSValue * arrayBuffer = [requestBody
@@ -355,7 +355,7 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
 
 -(NSMutableDictionary *)NSURLRequestToDetailsObject:(NSURLRequest *)request {
   JSContext * jsContext = [%c(JSContext) new];
-  NSMutableDictionary * details = [self newListenerDetailsObject];
+  NSMutableDictionary * details = [self newOnBeforeRequestListenerDetailsObject];
   NSURL * URL = [request URL];
 //  \"cookieStoreId\": null,
 //  \"documentURL\": null,
@@ -459,13 +459,15 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
                [thisParamSet[0] isEqual:@"name"]
             && thisParamSet[1]
           ) {
-            name = stripTrailingDoubleQuotes(thisParamSet[1]);
+            name = [URLTools
+              stripTrailingDoubleQuotes:thisParamSet[1]];
           }
           if (
                [thisParamSet[0] isEqual:@"filename"]
             && thisParamSet[1]
           ) {
-            filename = stripTrailingDoubleQuotes(thisParamSet[1]);
+            filename = [URLTools
+              stripTrailingDoubleQuotes:thisParamSet[1]];
           }
         }
         if ([name length] != 0 && filename) {
@@ -661,7 +663,7 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
 }
 
 -(NSURLRequest *)handleOnBeforeSendHeaders:(NSURLRequest *)request {
-  
+  return nil;
 }
 
 @end
