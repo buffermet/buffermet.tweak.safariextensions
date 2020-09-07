@@ -181,6 +181,7 @@ NSDictionary * const extensions = @{
 }
 
 -(id)dataTaskWithHTTPGetRequest:(id)arg1 completionHandler:(id)arg2{
+NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @"completionHandler:", arg2);
 //NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", arg1, @"completionHandler:", arg2);
   id retval = %orig;
 //NSLog(@"abla --- %@ %@", @"retval", retval);
@@ -189,7 +190,7 @@ NSDictionary * const extensions = @{
 
 // faults
 -(id)dataTaskWithRequest:(NSURLRequest *)arg1 {
-  NSLog(@"abla --- %@", @"dataTaskWithRequest");
+//  NSLog(@"abla --- %@", @"dataTaskWithRequest");
 //  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(arg1, "_internal") hash]);
 //NSLog(@"abla --- %@%@", @"-(id)dataTaskWithRequest:", arg1);
   id retval = %orig;
@@ -230,7 +231,7 @@ NSDictionary * const extensions = @{
 }
 
 -(id)dataTaskWithURL:(id)arg1 {
-  NSLog(@"abla --- %@", @"dataTaskWithURL");
+//  NSLog(@"abla --- %@", @"dataTaskWithURL");
   return %orig;
 }
 
@@ -426,16 +427,67 @@ NSDictionary * const extensions = @{
 
 %end
 
-/* NSURLSessionDelegate */
+/* __NSCFURLSessionTask */
 
-%hook NSURLSessionDelegate
+@interface __NSCFURLSessionTask : NSObject
+-(id)currentRequest;
+-(id)originalRequest;
+-(id)resume;
+@end
 
--(void)URLSessionDidFinishEventsForBackgroundURLSession:(id)arg1 {
-  NSLog(@"abla --- %@ %@", @"URLSessionDidFinishEventsForBackgroundURLSession:", arg1);
+%hook __NSCFURLSessionTask
+
+/*
+-(id)currentRequest {
+  NSLog(@"abla --- __NSCFURLSessionTask %@", @"currentRequest");
+  id retval = %orig;
+  return retval;
+}
+
+-(id)originalRequest {
+  NSLog(@"abla --- __NSCFURLSessionTask %@", @"originalRequest");
+  id retval = %orig;
+  return retval;
+}
+*/
+
+-(void)resume {
+  NSLog(@"abla --- __NSCFURLSessionTask %@", @"resume");
+  %orig;
+}
+
+-(void)setResponse:(id)arg1 {
+  // fire data event here?
+  NSLog(@"abla --- %@%@", @"setResponse:", @"redacted");
   %orig;
 }
 
 %end
+
+/* NSURLSessionTask */
+
+//%hook NSURLSessionTask
+//
+//-(id)currentRequest {
+//  NSLog(@"abla --- NSURLSessionTask %@", @"currentRequest");
+//  id retval = %orig;
+//  return retval;
+//}
+//
+//-(id)originalRequest {
+//  NSLog(@"abla --- NSURLSessionTask %@", @"originalRequest");
+//  id retval = %orig;
+//  return retval;
+//}
+//
+//-(void)resume {
+//  NSLog(@"abla --- NSURLSessionTask %@", @"resume");
+//  NSLog(@"abla --- %@", [self currentRequest]);
+//  NSLog(@"abla --- %@", [self originalRequest]);
+//  %orig;
+//}
+//
+//%end
 
 /* WKWebView */
 

@@ -1,0 +1,3 @@
+@interface WebRequestUpload : NSObject
++();
+@end
