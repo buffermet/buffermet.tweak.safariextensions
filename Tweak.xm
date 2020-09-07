@@ -416,14 +416,16 @@ NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @
 
 /* __NSCFURLSessionTask */
 
-long long lastRequestID = 0;
-const NSMutableDictionary * requestIDs;
+long long lastRequestID = -1;
+const NSMutableDictionary * requestIDs = [NSMutableDictionary new];
 
 @interface __NSCFURLSessionTask : NSObject
 -(id)currentRequest;
 -(id)originalRequest;
 -(id)resume;
 @end
+
+dispatch_semaphore_t semaphore;
 
 %hook __NSCFURLSessionTask
 
@@ -442,20 +444,46 @@ const NSMutableDictionary * requestIDs;
 */
 
 -(void)resume {
-  const NSURLRequest * const req = [self currentRequest];
-  NSLog(@"abla --- %llu ", [MSHookIvar<NSURLRequestInternal *>(req, "_internal") hash]);
   NSLog(@"abla --- __NSCFURLSessionTask %@", @"resume");
-//  NSLog(@"abla --- %@", [[NSString alloc]
-//    initWithData:[req HTTPBody]
-//    encoding:NSUTF8StringEncoding]);
+  const NSURLRequest * const request = [self currentRequest];
+  NSURLRequestInternal * requestInternal = MSHookIvar<NSURLRequestInternal *>(
+    request,
+    "_internal");
+  UInt64 requestHash = [requestInternal hash];
+  NSString * requestHashString = [NSString
+    stringWithFormat:
+      @"%llu", requestHash];
+  if (semaphore) {
+//    NSLog(@"abla --------------------- %@", @"request ID write lock instantiated");
+    if (![NSThread isMainThread]) {
+      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    } else {
+      while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW)) {
+        [[NSRunLoop currentRunLoop]
+          runMode:NSDefaultRunLoopMode
+          beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+      }
+    }
+  }
+  semaphore = dispatch_semaphore_create(0);
+  if (!requestIDs[requestHashString]) {
+    long long newRequestID = lastRequestID + 1;
+    NSString * newRequestIDString = [NSString
+      stringWithFormat:
+        @"%lld", newRequestID];
+    requestIDs[requestHashString] = newRequestIDString;
+    NSLog(@"abla --- %@", requestIDs);
+    lastRequestID = newRequestID;
+    dispatch_semaphore_signal(semaphore);
+  }
   %orig;
 }
 
--(void)setResponse:(id)arg1 {
+//-(void)setResponse:(id)arg1 {
   // fire data event here?
-  NSLog(@"abla --- %@%@ %@%lld", @"setResponse:", @"redacted", @"status:", (long long) [arg1 statusCode]);
-  %orig;
-}
+//  NSLog(@"abla --- %@%@ %@%lld", @"setResponse:", @"redacted", @"status:", (long long) [arg1 statusCode]);
+//  %orig;
+//}
 
 %end
 
