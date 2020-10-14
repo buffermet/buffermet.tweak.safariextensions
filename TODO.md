@@ -1,4 +1,4 @@
-An entry in this list is checked (✅) once it has been demonstrated to handle input and produce output the same way (or better) as the WebExtensions API as described in <a href="https://searchfox.org/mozilla-central/source">Mozilla's</a> and/or <a href="https://chromium.googlesource.com/chromium">Chromium's</a> documentation.
+An entry in this list is marked as complete (✅) once it has been demonstrated to handle input and produce output the same way (or better) as the WebExtensions API as described in <a href="https://searchfox.org/mozilla-central/source">Mozilla's</a> and/or <a href="https://chromium.googlesource.com/chromium">Chromium's</a> documentation.
 
 JavaScript APIs:
 
