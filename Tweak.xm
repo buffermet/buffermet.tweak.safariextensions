@@ -65,7 +65,7 @@ NSDictionary * const extensions = @{
   _webView = [[%c(WKWebView) alloc]
     initWithFrame:CGRectMake(0,0,0,0)
     configuration:configuration];
-  _webView.navigationDelegate = self;
+  _webView.navigationDelegate = self;;
   [self.view addSubview:_webView];
   [self.view sendSubviewToBack:_webView];
   [_webView
@@ -398,6 +398,7 @@ NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @
 
 /* NSURLSessionTask */
 
+/*
 %hook NSURLSessionTask
 
 -(void)resume {
@@ -413,11 +414,12 @@ NSLog(@"abla --- %@%@ %@%@", @"-(id)dataTaskWithHTTPGetRequest:", @"redacted", @
 }
 
 %end
+*/
 
 /* __NSCFURLSessionTask */
 
 long long lastRequestID = -1;
-const NSMutableDictionary * requestIDs = [NSMutableDictionary new];
+static NSMutableDictionary * requestIDs = [NSMutableDictionary new];
 
 @interface __NSCFURLSessionTask : NSObject
 -(id)currentRequest;
@@ -441,7 +443,6 @@ dispatch_semaphore_t semaphore;
   id retval = %orig;
   return retval;
 }
-*/
 
 -(void)resume {
   NSLog(@"abla --- __NSCFURLSessionTask %@", @"resume");
@@ -453,29 +454,32 @@ dispatch_semaphore_t semaphore;
   NSString * requestHashString = [NSString
     stringWithFormat:
       @"%llu", requestHash];
-  if (semaphore) {
-//    NSLog(@"abla --------------------- %@", @"request ID write lock instantiated");
-    if (![NSThread isMainThread]) {
-      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    } else {
-      while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW)) {
-        [[NSRunLoop currentRunLoop]
-          runMode:NSDefaultRunLoopMode
-          beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+    if (semaphore) {
+  //    NSLog(@"abla --------------------- %@", @"request ID write lock instantiated");
+      if (![NSThread isMainThread]) {
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+      } else {
+        while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW)) {
+          [[NSRunLoop currentRunLoop]
+            runMode:NSDefaultRunLoopMode
+            beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+        }
       }
     }
-  }
-  semaphore = dispatch_semaphore_create(0);
-  if (!requestIDs[requestHashString]) {
-    long long newRequestID = lastRequestID + 1;
-    NSString * newRequestIDString = [NSString
-      stringWithFormat:
-        @"%lld", newRequestID];
-    requestIDs[requestHashString] = newRequestIDString;
-    NSLog(@"abla --- %@", requestIDs);
-    lastRequestID = newRequestID;
+    semaphore = dispatch_semaphore_create(0);
+    NSLog(@"abla --- %@ = %@ was found: %@", [NSString stringWithFormat:@"%lld", lastRequestID + 1], requestHashString, requestIDs[requestHashString] ? @"YES" : @"NO");
+    if (!requestIDs[requestHashString]) {
+      long long newRequestID = lastRequestID + 1;
+      NSString * newRequestIDString = [NSString
+        stringWithFormat:
+          @"%lld", newRequestID];
+      requestIDs[requestHashString] = newRequestIDString;
+      NSLog(@"abla --- %@", requestIDs);
+      lastRequestID = newRequestID;
+    }
     dispatch_semaphore_signal(semaphore);
-  }
+  });
   %orig;
 }
 
@@ -484,6 +488,7 @@ dispatch_semaphore_t semaphore;
 //  NSLog(@"abla --- %@%@ %@%lld", @"setResponse:", @"redacted", @"status:", (long long) [arg1 statusCode]);
 //  %orig;
 //}
+*/
 
 %end
 

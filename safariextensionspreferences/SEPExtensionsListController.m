@@ -63,6 +63,9 @@ NSDictionary * const extensions = @{
       edit:Nil];
     [specifier setProperty:@YES forKey:@"enabled"];
     [specifier setProperty:@"0" forKey:@"default"];		
+    if ([extensionName isEqual:@"HTTPS or BYE"]) {
+      [specifier setProperty:@"HTTPS or BYE" forKey:@"detail"];
+    }
     //specifier.shortTitleDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"T1",@"T@",@"T3",nil] forKeys:specifier.values];
     [specifier
       setProperty:@"kListValue"

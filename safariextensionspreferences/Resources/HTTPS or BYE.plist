@@ -13,31 +13,12 @@
 
     <dict>
       <key>cell</key>
-      <string>PSGroupCell</string>
-      <key>label</key>
-      <string>ACCEPTED FORMATS:
-
-*
-*.EXAMPLE.COM
-WWW.EXAMPLE.COM
-WWW.EXAMPLE.COM/PATH</string>
-    </dict>
-
-    <dict>
-      <key>cell</key>
       <string>PSLinkCell</string>
       <key>label</key>
       <string></string>
     </dict>
-
-    <dict>
-      <key>cell</key>
-      <string>PSGroupCell</string>
-      <key>label</key>
-      <string>CONSOLE</string>
-    </dict>
 	</array>
 	<key>title</key>
-	<string>Nameless Extension</string>
+	<string>TEST</string>
 </dict>
 </plist>

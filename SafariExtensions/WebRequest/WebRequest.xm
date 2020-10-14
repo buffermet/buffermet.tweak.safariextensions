@@ -328,7 +328,7 @@ NSArray * getBufferedStringChunksAndSplit(NSString * str, int size, NSString * b
     if ([requestBody hasProperty:@"formData"]) {
 //      JSValue * 
 //      
- =    }
+    }
     if ([requestBody hasProperty:@"raw"]) {
 //      JSValue * arrayBuffer = [requestBody
 //        valueForProperty:@"raw"];

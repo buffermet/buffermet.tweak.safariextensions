@@ -10,17 +10,36 @@
       <key>label</key>
       <string>ENABLED</string>
     </dict>
+
     <dict>
       <key>cell</key>
       <string>PSGroupCell</string>
       <key>label</key>
       <string>DISABLED</string>
     </dict>
+
     <dict>
       <key>cell</key>
       <string>PSGroupCell</string>
       <key>label</key>
       <string>The order of your extensions list determines which extension handles a given web request first, starting from the top.</string>
+    </dict>
+
+    <dict>
+        <key>cell</key>
+        <string>PSEditTextCell</string>
+        <key>placeholder</key>
+        <string>0.2</string>
+        <key>bestGuess</key>
+        <string>0.2</string>
+        <key>defaults</key>
+        <string>com.yourname.yourtweak</string>
+        <key>isDecimalPad</key>
+        <true/>
+        <key>key</key>
+        <string>savedName</string>
+        <key>label</key>
+        <string>Visible Name:</string>
     </dict>
 	</array>
 	<key>title</key>
