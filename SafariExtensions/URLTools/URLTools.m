@@ -3,7 +3,7 @@
 @implementation URLTools
 
 /**
- * Returns a regexp selector that will match the specified anchor string.
+ * Returns a case insensitive regexp selector that will match the specified anchor string.
  * (wilcards are not allowed)
  * (example input: @"#anyBytes...")
  * (example output: [NSRegularExpression
@@ -28,7 +28,7 @@
 }
 
 /**
- * Returns a regexp selector using the specified domain specifier string.
+ * Returns a case insensitive regexp selector using the specified domain specifier string.
  * Domain specifiers can contain a wildcard to specify subdomains.
  * Use "<all_urls>" to specify all domains.
  * (example input: @"*.example.org"). 
@@ -174,7 +174,7 @@
 }
 
 /**
- * Returns a regexp selector that will match the specified path string.
+ * Returns a case insensitive regexp selector that will match the specified path string.
  * (wilcards are allowed)
  * (example input: @"/api/something-*")
  * (example output: [NSRegularExpression
@@ -208,7 +208,7 @@
 }
 
 /**
- * Returns a regexp selector using the specified port string.
+ * Returns a case insensitive regexp selector using the specified port string.
  * (example input: @":443")
  * (example output: [NSRegularExpression
  *   regularExpressionWithPattern:@":443"
@@ -223,7 +223,7 @@
 }
 
 /**
- * Returns a regexp selector using the specified protocol string.
+ * Returns a case insensitive regexp selector using the specified protocol string.
  * (example input: @"*:")
  * (example output: [NSRegularExpression
  *   regularExpressionWithPattern:@"[a-z-]+:"
@@ -247,7 +247,7 @@
 }
 
 /**
- * Returns a regexp selector that will match the specified query string.
+ * Returns a case insensitive regexp selector that will match the specified query string.
  * (wilcards are allowed)
  * (example input: @"?param=value&darkmode=1&data=AjujNW%3D%3D")
  * (example output: [NSRegularExpression
@@ -318,11 +318,10 @@
 +(NSURL *)upgradeNSURLProtocol:(NSURL *)URL {
   NSString * const insecureURL = [NSString
     stringWithFormat:@"%@", [URL absoluteURL]];
-  NSError * err = nil;
   NSRegularExpression * regexp = [NSRegularExpression
     regularExpressionWithPattern:@"(http|ws):"
     options:NSRegularExpressionCaseInsensitive
-    error:&err];
+    error:nil];
   NSString * secureURL = [regexp
     stringByReplacingMatchesInString:insecureURL
     options:0
@@ -332,68 +331,36 @@
 }
 
 /**
- * Returns an array of case insensitive regexp specifiers using the specified URL
- * specifier string.
- * Wildcards are not allowed in the URL query and anchor.
- * (example input: @"*://
- * *.example.org/path/
- * *?param=A9fjjo%3D%3D#anchor")
- * (example output: @[
- *   <NSRegularExpression *>, 
- *   <NSRegularExpression *>, 
- *   <NSRegularExpression *>, 
- *   <NSRegularExpression *>, 
- *   <NSRegularExpression *>, 
- *   <NSRegularExpression *>
- * ])
+ * Returns a case insensitive regexp selector for a given URI specifier.
+ * (example input: @"*://example.org/test*")
+ * (example output: [NSRegularExpression
+ *   regularExpressionWithPattern:@".*?[:][/][/]example[.]org[/]test.*?"
+ *   options:NSRegularExpressionCaseInsensitive
+ *   error:nil])
  */
-+(NSArray *)URLSpecifierToRegexpIgnoreCaseSet:(NSString *)urlSpecifier {
++(NSRegularExpressionCaseInsensitive *)URLSpecifierToRegexpIgnoreCase:(NSString *)uriSpecifier {
   NSRegularExpression * regexp = [NSRegularExpression
-    regularExpressionWithPattern:@".*://"
+    regularExpressionWithPattern:@"[^*\]a-z0-9]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
+  NSString * selector = [regexp
+    stringByReplacingMatchesInString:uriSpecifier
+    options:0
+    range:NSMakeRange(0, [insecureURL length])
+    withTemplate:@"[$1]"];
   regexp = [NSRegularExpression
-    regularExpressionWithPattern:@"((?:[a-z-]+|[*]):)//((?:\\*\\.[a-z]{1,63}|(?:(?:\\*\\.|)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+(?:[a-z]{1,63})))(:[0-9]{1,5}])?(/[^?#]*)([?][^#]+)?([#].*)?"
+    regularExpressionWithPattern:@"[*]"
     options:NSRegularExpressionCaseInsensitive
     error:nil];
-  NSString * protocolSpecifier = [regexp
-    stringByReplacingMatchesInString:urlSpecifier
+  selector = [regexp
+    stringByReplacingMatchesInString:uriSpecifier
     options:0
-    range:NSMakeRange(0, [urlSpecifier length]) 
-    withTemplate:@"$1"];
-  NSString * domainSpecifier = [regexp
-    stringByReplacingMatchesInString:urlSpecifier
-    options:0
-    range:NSMakeRange(0, [urlSpecifier length]) 
-    withTemplate:@"$2"];
-  NSString * portSpecifier = [regexp
-    stringByReplacingMatchesInString:urlSpecifier
-    options:0
-    range:NSMakeRange(0, [urlSpecifier length]) 
-    withTemplate:@"$3"];
-  NSString * pathSpecifier = [regexp
-    stringByReplacingMatchesInString:urlSpecifier
-    options:0
-    range:NSMakeRange(0, [urlSpecifier length]) 
-    withTemplate:@"$4"];
-  NSString * querySpecifier = [regexp
-    stringByReplacingMatchesInString:urlSpecifier
-    options:0
-    range:NSMakeRange(0, [urlSpecifier length]) 
-    withTemplate:@"$5"];
-  NSString * anchorSpecifier = [regexp
-    stringByReplacingMatchesInString:urlSpecifier
-    options:0
-    range:NSMakeRange(0, [urlSpecifier length]) 
-    withTemplate:@"$6"];
-  return @[
-    [self protocolSpecifierToRegexpIgnoreCase:protocolSpecifier],
-    [self domainSpecifierToRegexpIgnoreCase:domainSpecifier],
-    [self pathSpecifierToRegexpIgnoreCase:portSpecifier],
-    [self pathSpecifierToRegexpIgnoreCase:pathSpecifier],
-    [self querySpecifierToRegexpIgnoreCase:querySpecifier],
-    [self anchorSpecifierToRegexpIgnoreCase:anchorSpecifier]
-  ];
+    range:NSMakeRange(0, [insecureURL length])
+    withTemplate:@".*?"];
+  return [NSRegularExpression
+    regularExpressionWithPattern:selector
+    options:NSRegularExpressionCaseInsensitive
+    error:nil];
 }
 
 @end

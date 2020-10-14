@@ -536,25 +536,6 @@ dispatch_semaphore_t semaphore;
 */
 
 /*
-  Called on a separate thread when the document starts loading,
-  this is when content scripts are executed.
-*/
--(void)_didCommitLoadForMainFrame {
-  NSString * const host = [[self URL] host];
-  if (host) {
-    /* debug */
-    NSString * const payload = [%c(SEContentScripts)
-      assembleContentScriptsForHost:host];
-    if (payload) {
-      [self
-        evaluateJavaScript:payload
-        completionHandler:nil];
-    }
-  }
-  %orig;
-}
-
-/*
 -(id)load:(NSURLRequest *)arg1 {
 //NSLog(@"abla --- %@%@", @"load:", arg1);
   id retval = %orig;
